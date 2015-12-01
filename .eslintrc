@@ -1,0 +1,34 @@
+{
+    "rules": {
+        "indent": [
+            2,
+            2
+        ],
+        "quotes": [
+            0,
+            "double"
+        ],
+        "linebreak-style": [
+            2,
+            "unix"
+        ],
+        "semi": [
+            2,
+            "always"
+        ],
+        "no-unused-vars": [2, {"vars": "all", "args": "none"}],
+        "no-console": [
+            0
+        ],
+        "comma-dangle":[0]
+    },
+    "env": {
+        "es6": true,
+        "browser": true,
+        "mocha": true,
+        "node": true
+    },
+    "ecmaFeatures": { modules: true },
+    "extends": "eslint:recommended",
+    "plugins": ["flowtype"]
+}
