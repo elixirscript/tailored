@@ -21,7 +21,7 @@ export class MatchError extends Error {
 }
 
 
-export class Case {
+export class Clause {
   pattern: Function;
   fn: Function;
   guard: Function;
@@ -33,16 +33,16 @@ export class Case {
   }
 }
 
-export function make_case(pattern: Array<any>, fn: Function, guard: Function = () => true): Case {
-  return new Case(pattern, fn, guard);
+export function clause(pattern: Array<any>, fn: Function, guard: Function = () => true): Clause {
+  return new Clause(pattern, fn, guard);
 }
 
-export function defmatch(...cases: Array<Case>): Function {
+export function defmatch(...clauses: Array<Clause>): Function {
   return function(...args: Array<any>): any {
-    for (let processedCase of cases) {
+    for (let processedClause of clauses) {
       let result = [];
-      if (processedCase.pattern(args, result) && processedCase.guard.apply(this, result)) {
-        return processedCase.fn.apply(this, result);
+      if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
+        return processedClause.fn.apply(this, result);
       }
     }
 
@@ -57,17 +57,5 @@ export function match(pattern: any, expr: any, guard: Function = () => true): Ar
     return result;
   }else{
     throw new MatchError(expr);
-  }
-}
-
-export function match_no_throw(pattern: any, expr: any, guard: Function = () => true): ?Array<any> {
-  try{
-    return match(pattern, expr, guard);
-  }catch(e){
-    if(e instanceof MatchError){
-      return null;
-    }
-
-    throw e;
   }
 }

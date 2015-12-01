@@ -1,7 +1,7 @@
 'use strict';
 
 let expect = require('chai').expect;
-let Tailored = require('../lib/index');
+let Tailored = require('../lib/tailored');
 
 const _ = Tailored.wildcard();
 const $ = Tailored.variable();
@@ -10,8 +10,8 @@ describe('defmatch', () => {
   it('must correctly evaluate example', () => {
 
     let fact = Tailored.defmatch(
-      Tailored.make_case([0], () => 1),
-      Tailored.make_case([$], (n) => n * fact(n - 1))
+      Tailored.clause([0], () => 1),
+      Tailored.clause([$], (n) => n * fact(n - 1))
     );
 
     let response = fact(0);
@@ -26,7 +26,7 @@ describe('defmatch', () => {
   it('must throw error when no match is found', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([0], () => 1)
+      Tailored.clause([0], () => 1)
     );
 
     expect(fn.bind(fn, 1)).to.throw("No match for: 1");
@@ -35,7 +35,7 @@ describe('defmatch', () => {
   it('must have wildcard except everything', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([_], () => 1)
+      Tailored.clause([_], () => 1)
     );
 
     expect(fn(1)).to.equal(1);
@@ -47,7 +47,7 @@ describe('defmatch', () => {
   it('must work symbols', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([Symbol.for('infinity')], () => 1)
+      Tailored.clause([Symbol.for('infinity')], () => 1)
     );
 
     expect(fn(Symbol.for('infinity'))).to.equal(1);
@@ -57,8 +57,8 @@ describe('defmatch', () => {
   it('must match on values in object', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([{value: $}], (val) => 1 + val),
-      Tailored.make_case([{a: {b: {c: $} } }], (val) => 1 - val)
+      Tailored.clause([{value: $}], (val) => 1 + val),
+      Tailored.clause([{a: {b: {c: $} } }], (val) => 1 - val)
     );
 
     expect(fn({value: 20})).to.equal(21);
@@ -68,8 +68,8 @@ describe('defmatch', () => {
   it('must match on objects even when value has more keys', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([{value: $}], (val) => 1 + val),
-      Tailored.make_case([{a: {b: {c: $} } }], (val) => 1 - val)
+      Tailored.clause([{value: $}], (val) => 1 + val),
+      Tailored.clause([{a: {b: {c: $} } }], (val) => 1 - val)
     );
 
     expect(fn({value: 20})).to.equal(21);
@@ -79,7 +79,7 @@ describe('defmatch', () => {
   it('must match on substrings', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([Tailored.startsWith("Bearer ")], (token) => token)
+      Tailored.clause([Tailored.startsWith("Bearer ")], (token) => token)
     );
 
     expect(fn("Bearer 1234")).to.equal("1234");
@@ -89,7 +89,7 @@ describe('defmatch', () => {
   it('must work with guards', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([$], (number) => number, (number) => number > 0)
+      Tailored.clause([$], (number) => number, (number) => number > 0)
     );
 
     expect(fn(3)).to.equal(3);
@@ -99,19 +99,19 @@ describe('defmatch', () => {
   it('must capture entire match as parameter', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case([Tailored.capture({a: {b: {c: $} } })], (val, bound_value) => bound_value["a"]["b"]["c"])
+      Tailored.clause([Tailored.capture({a: {b: {c: $} } })], (val, bound_value) => bound_value["a"]["b"]["c"])
     );
 
     expect(fn({a: {b: {c: 20} } })).to.equal(20);
 
     fn = Tailored.defmatch(
-      Tailored.make_case([Tailored.capture([1, $, 3, $])], (a, b, bound_value) => bound_value.length)
+      Tailored.clause([Tailored.capture([1, $, 3, $])], (a, b, bound_value) => bound_value.length)
     );
 
     expect(fn([1, 2, 3, 4])).to.equal(4);
 
     fn = Tailored.defmatch(
-      Tailored.make_case(
+      Tailored.clause(
         [Tailored.capture([1, Tailored.capture({a: {b: {c: $} } }), 3, $])],
         (c, two, four, arg) =>  two["a"]["b"]["c"]
       )
@@ -123,7 +123,7 @@ describe('defmatch', () => {
   it('must produce a head and a tail', () => {
 
     let fn = Tailored.defmatch(
-      Tailored.make_case(
+      Tailored.clause(
         [Tailored.headTail()],
         (head, tail) => tail
       )

@@ -2,7 +2,7 @@
   "name": "tailored",
   "version": "1.0.0",
   "description": "Pattern matching library",
-  "main": "lib/index.js",
+  "main": "lib/tailored.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,11 +17,13 @@
     "babel-preset-react": "^6.1.18",
     "babel-preset-stage-0": "^6.1.18",
     "chai": "^3.4.1",
+    "del": "^2.1.0",
     "eslint-plugin-flowtype": "^1.0.0",
     "gulp": "^3.9.0",
     "gulp-babel": "^6.1.1",
     "gulp-eslint": "^1.1.1",
     "gulp-mocha": "^2.2.0",
+    "gulp-rename": "^1.2.2",
     "gulp-rollup": "^1.4.0",
     "gulp-sourcemaps": "^1.6.0"
   }

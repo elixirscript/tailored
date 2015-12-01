@@ -1,7 +1,7 @@
 'use strict';
 
 let expect = require('chai').expect;
-let Tailored = require('../lib/index');
+let Tailored = require('../lib/tailored');
 
 const _ = Tailored.wildcard();
 const $ = Tailored.variable();

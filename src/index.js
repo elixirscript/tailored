@@ -1,9 +1,9 @@
-import { defmatch, match, MatchError, match_no_throw, Case, make_case } from "./tailored/defmatch";
+import { defmatch, match, MatchError, Clause, clause } from "./tailored/defmatch";
 import { variable, wildcard, startsWith, capture, headTail, type, bound } from "./tailored/types";
 
 
 export {
-  defmatch, match, MatchError, match_no_throw,
+  defmatch, match, MatchError,
   variable, wildcard, startsWith,
-  capture, headTail, type, bound, Case, make_case
+  capture, headTail, type, bound, Clause, clause
 };
