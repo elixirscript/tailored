@@ -4,13 +4,17 @@
   "description": "Pattern matching library",
   "main": "lib/tailored.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "gulp test"
   },
   "keywords": [
     "pattern-matching",
     "functional"
   ],
-  "author": "Bryan Joseph bryanjos@gmail.com",
+  "repository": {
+   "type": "git",
+   "url": "https://github.com/bryanjos/tailored.git"
+  },
+  "author": "Bryan Joseph <bryanjos@gmail.com>",
   "license": "MIT",
   "devDependencies": {
     "babel-preset-es2015": "^6.1.18",

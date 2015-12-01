@@ -2,10 +2,6 @@
 
 ## A pattern matching library
 
-```js
-const tailored = require('tailored');
-```
-
 This is the pattern matching library ported from elixirscript. It allows you to
 create functions that will perform pattern matching on the input and either execute
 the corresponding function or throw a `tailored.MatchError`.
