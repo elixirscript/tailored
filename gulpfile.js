@@ -11,6 +11,21 @@ const testPath = './test/**/*.spec.js';
 const libPath = './src/**/*.js';
 const buildPath = './build/**/*.js';
 
+const babelConfig = {
+  "plugins": [
+    "transform-es2015-classes",
+    "transform-es2015-destructuring",
+    "transform-es2015-modules-commonjs",
+    "transform-es2015-object-super",
+    "transform-es2015-parameters",
+    "transform-es2015-shorthand-properties",
+    "transform-es2015-spread",
+    "transform-es2015-unicode-regex",
+    "transform-flow-strip-types",
+    "syntax-flow"
+  ]
+}
+
 gulp.task('remove_flow', function() {
   return gulp.src([libPath])
       .pipe(babel({
@@ -29,9 +44,7 @@ gulp.task('rollup', ['remove_flow'], function() {
 gulp.task('babel', ['rollup'], function() {
   return gulp.src('./lib/index.js')
       .pipe(sourcemaps.init())
-      .pipe(babel({
-        "presets": ["es2015", "react", "stage-0"]
-      }))
+      .pipe(babel(babelConfig))
       .pipe(sourcemaps.write())
       .pipe(rename("tailored.js"))
       .pipe(gulp.dest('./lib'));
@@ -45,9 +58,7 @@ gulp.task('build', ['babel'], function() {
 gulp.task('build_test', function() {
   return gulp.src([testPath])
       .pipe(sourcemaps.init())
-      .pipe(babel({
-        "presets": ["es2015", "react", "stage-0"]
-      }))
+      .pipe(babel(babelConfig))
       .pipe(sourcemaps.write())
       .pipe(gulp.dest('./test_build'));
 });
