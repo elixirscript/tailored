@@ -1,9 +1,7 @@
 /* @flow */
 
 class Variable {
-  name: ?string;
-
-  constructor(name: ?string = null) {
+  constructor(name = null) {
     this.name = name;
   }
 }
@@ -14,17 +12,15 @@ class Wildcard {
 }
 
 class StartsWith {
-  prefix: string;
 
-  constructor(prefix: string) {
+  constructor(prefix) {
     this.prefix = prefix;
   }
 }
 
 class Capture {
-  value: any;
 
-  constructor(value: any) {
+  constructor(value) {
     this.value = value;
   }
 }
@@ -35,48 +31,45 @@ class HeadTail {
 }
 
 class Type {
-  type: any;
-  objPattern: Object;
 
-  constructor(type: any, objPattern: Object = {}) {
+  constructor(type, objPattern = {}) {
     this.type = type;
     this.objPattern = objPattern;
   }
 }
 
 class Bound {
-  value: any;
 
-  constructor(value: any) {
+  constructor(value) {
     this.value = value;
   }
 }
 
-function variable(name: ?string = null): Variable {
+function variable(name = null) {
   return new Variable(name);
 }
 
-function wildcard(): Wildcard {
+function wildcard() {
   return new Wildcard();
 }
 
-function startsWith(prefix: string): StartsWith {
+function startsWith(prefix) {
   return new StartsWith(prefix);
 }
 
-function capture(value: any): Capture {
+function capture(value) {
   return new Capture(value);
 }
 
-function headTail(): HeadTail {
+function headTail() {
   return new HeadTail();
 }
 
-function type(type: any, objPattern: Object = {}): Type {
+function type(type, objPattern = {}) {
   return new Type(type, objPattern);
 }
 
-function bound(value: any): Bound {
+function bound(value) {
   return new Bound(value);
 }
 

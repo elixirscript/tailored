@@ -2,7 +2,7 @@
 import * as Checks from "./checks";
 import * as Resolvers from "./resolvers";
 
-export function buildMatch(pattern: any): Function {
+export function buildMatch(pattern) {
 
   if(Checks.is_variable(pattern)){
     return Resolvers.resolveVariable(pattern);

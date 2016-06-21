@@ -2,67 +2,67 @@
 
 import { Variable, Wildcard, HeadTail, Capture, Type, StartsWith, Bound } from "./types";
 
-function is_number(value: any): boolean {
+function is_number(value) {
   return typeof value === 'number';
 }
 
-function is_string(value: any): boolean{
+function is_string(value){
   return typeof value === 'string';
 }
 
-function is_boolean(value: any): boolean {
+function is_boolean(value) {
   return typeof value === 'boolean';
 }
 
-function is_symbol(value: any): boolean {
+function is_symbol(value) {
   return typeof value === 'symbol';
 }
 
-function is_null(value: any): boolean {
+function is_null(value) {
   return value === null;
 }
 
-function is_undefined(value: any): boolean {
+function is_undefined(value) {
   return typeof value === 'undefined';
 }
 
-function is_function(value: any): boolean {
+function is_function(value) {
   return Object.prototype.toString.call(value) == '[object Function]';
 }
 
-function is_variable(value: any): boolean {
+function is_variable(value) {
   return value instanceof Variable;
 }
 
-function is_wildcard(value: any): boolean {
+function is_wildcard(value) {
   return value instanceof Wildcard;
 }
 
-function is_headTail(value: any): boolean {
+function is_headTail(value) {
   return value instanceof HeadTail;
 }
 
-function is_capture(value: any): boolean {
+function is_capture(value) {
   return value instanceof Capture;
 }
 
-function is_type(value: any): boolean {
+function is_type(value) {
   return value instanceof Type;
 }
 
-function is_startsWith(value: any): boolean {
+function is_startsWith(value) {
   return value instanceof StartsWith;
 }
 
-function is_bound(value: any): boolean {
+function is_bound(value) {
   return value instanceof Bound;
 }
 
-function is_object(value: any): boolean {
+function is_object(value) {
   return typeof value === 'object';
 }
 
-function is_array(value: any): boolean {
+function is_array(value) {
   return Array.isArray(value);
 }
 

@@ -3,7 +3,7 @@
 import { buildMatch } from "./match";
 
 export class MatchError extends Error {
-  constructor(arg: any) {
+  constructor(arg) {
     super();
 
     if(typeof arg === 'symbol'){
@@ -22,23 +22,19 @@ export class MatchError extends Error {
 
 
 export class Clause {
-  pattern: Function;
-  fn: Function;
-  guard: Function;
-
-  constructor(pattern: Array<any>, fn: Function, guard: Function = () => true){
+  constructor(pattern, fn, guard = () => true){
     this.pattern = buildMatch(pattern);
     this.fn = fn;
     this.guard = guard;
   }
 }
 
-export function clause(pattern: Array<any>, fn: Function, guard: Function = () => true): Clause {
+export function clause(pattern, fn, guard = () => true) {
   return new Clause(pattern, fn, guard);
 }
 
-export function defmatch(...clauses: Array<Clause>): Function {
-  return function(...args: Array<any>): any {
+export function defmatch(...clauses) {
+  return function(...args) {
     for (let processedClause of clauses) {
       let result = [];
       if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
@@ -50,7 +46,7 @@ export function defmatch(...clauses: Array<Clause>): Function {
   };
 }
 
-export function match(pattern: any, expr: any, guard: Function = () => true): Array<any> {
+export function match(pattern, expr, guard = () => true) {
   let result = [];
   let processedPattern = buildMatch(pattern);
   if (processedPattern(expr, result) && guard.apply(this, result)){
