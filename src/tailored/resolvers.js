@@ -3,6 +3,8 @@
 import * as Checks from "./checks";
 import * as Types from "./types";
 import { buildMatch } from "./match";
+import ErlangTypes from "erlang-types";
+const BitString = ErlangTypes.BitString;
 
 function resolveSymbol(pattern){
   return function(value){
@@ -134,7 +136,7 @@ function resolveArray(pattern) {
 function resolveObject(pattern) {
   let matches = {};
 
-  for(let key of Object.keys(pattern)){
+  for(let key of Object.keys(pattern).concat(Object.getOwnPropertySymbols(pattern))){
     matches[key] = buildMatch(pattern[key]);
   }
 
@@ -143,7 +145,7 @@ function resolveObject(pattern) {
       return false;
     }
 
-    for(let key of Object.keys(pattern)){
+    for(let key of Object.keys(pattern).concat(Object.getOwnPropertySymbols(pattern))){
       if(!(key in value) || !matches[key](value[key], args) ){
         return false;
       }
@@ -151,6 +153,140 @@ function resolveObject(pattern) {
 
     return true;
   };
+}
+
+function resolveBitString(pattern) {
+  let patternBitString = [];
+
+  for(let bitstringMatchPart of pattern.values){
+    if(Checks.is_variable(bitstringMatchPart.value)){
+      let size = getSize(bitstringMatchPart.unit, bitstringMatchPart.size);
+      fillArray(patternBitString, size);
+    }else{
+      patternBitString = patternBitString.concat(new BitString(bitstringMatchPart).value);
+    }
+  }
+
+  let patternValues = pattern.values;
+
+  return function(value, args) {
+    let bsValue = null;
+
+    if(!Checks.is_string(value) && !(value instanceof BitString) ){
+      return false;
+    }
+
+    if(Checks.is_string(value)){
+      bsValue = new BitString(BitString.binary(value));
+    }else{
+      bsValue = value;
+    }
+
+    let beginningIndex = 0;
+
+    for(let i = 0; i < patternValues.length; i++){
+      let bitstringMatchPart = patternValues[i];
+
+      if(Checks.is_variable(bitstringMatchPart.value) &&
+         bitstringMatchPart.type == 'binary' &&
+         bitstringMatchPart.size === undefined &&
+         i < patternValues.length - 1){
+        throw new Error("a binary field without size is only allowed at the end of a binary pattern");
+      }
+
+      let size = 0;
+      let bsValueArrayPart = [];
+      let patternBitStringArrayPart = [];
+      size = getSize(bitstringMatchPart.unit, bitstringMatchPart.size);
+
+      if(i === patternValues.length - 1){
+        bsValueArrayPart = bsValue.value.slice(beginningIndex);
+        patternBitStringArrayPart = patternBitString.slice(beginningIndex);
+      } else {
+        bsValueArrayPart = bsValue.value.slice(beginningIndex, beginningIndex + size);
+        patternBitStringArrayPart = patternBitString.slice(beginningIndex, beginningIndex + size);
+      }
+
+      if(Checks.is_variable(bitstringMatchPart.value)){
+        switch(bitstringMatchPart.type) {
+        case 'integer':
+          if(bitstringMatchPart.attributes && bitstringMatchPart.attributes.indexOf("signed") != -1){
+            args.push(new Int8Array([bsValueArrayPart[0]])[0]);
+          } else {
+            args.push(new Uint8Array([bsValueArrayPart[0]])[0]);
+          }
+          break;
+
+        case 'float':
+          if(size === 64){
+            args.push(Float64Array.from(bsValueArrayPart)[0]);
+          } else if(size === 32){
+            args.push(Float32Array.from(bsValueArrayPart)[0]);
+          }else{
+            return false;
+          }
+          break;
+
+        case 'bitstring':
+          args.push(createBitString(bsValueArrayPart));
+          break;
+
+        case 'binary':
+          args.push(String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart)));
+          break;
+
+        case 'utf8':
+          args.push(String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart)));
+          break;
+
+        case 'utf16':
+          args.push(String.fromCharCode.apply(null, new Uint16Array(bsValueArrayPart)));
+          break;
+
+        case 'utf32':
+          args.push(String.fromCharCode.apply(null, new Uint32Array(bsValueArrayPart)));
+          break;
+
+        default:
+          return false;
+        }
+      }else if(!arraysEqual(bsValueArrayPart, patternBitStringArrayPart)) {
+        return false;
+      }
+
+      beginningIndex = beginningIndex + size;
+    }
+
+    return true;
+  };
+
+}
+
+function getSize(unit, size){
+  return (unit * size) / 8;
+}
+
+function arraysEqual(a, b) {
+  if (a === b) return true;
+  if (a == null || b == null) return false;
+  if (a.length != b.length) return false;
+
+  for (var i = 0; i < a.length; ++i) {
+    if (a[i] !== b[i]) return false;
+  }
+
+  return true;
+}
+
+function fillArray(arr, num){
+  for(let i = 0; i < num; i++){
+    arr.push(0);
+  }
+}
+
+function createBitString(arr){
+  let integerParts = arr.map((elem) => BitString.integer(elem));
+  return new BitString(...integerParts);
 }
 
 function resolveNoMatch() {
@@ -175,5 +311,6 @@ export {
   resolveNumber,
   resolveBoolean,
   resolveFunction,
-  resolveNull
+  resolveNull,
+  resolveBitString
 };

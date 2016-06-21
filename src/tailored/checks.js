@@ -1,6 +1,6 @@
 /* @flow */
 
-import { Variable, Wildcard, HeadTail, Capture, Type, StartsWith, Bound } from "./types";
+import { Variable, Wildcard, HeadTail, Capture, Type, StartsWith, Bound, BitStringMatch } from "./types";
 
 function is_number(value) {
   return typeof value === 'number';
@@ -66,6 +66,10 @@ function is_array(value) {
   return Array.isArray(value);
 }
 
+function is_bitstring(value) {
+  return value instanceof BitStringMatch;
+}
+
 export {
   is_number,
   is_string,
@@ -82,5 +86,6 @@ export {
   is_startsWith,
   is_bound,
   is_object,
-  is_array
+  is_array,
+  is_bitstring
 };

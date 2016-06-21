@@ -1,7 +1,12 @@
 'use strict';
 
-let expect = require('chai').expect;
-let Tailored = require('../lib/tailored');
+import chai from 'chai';
+var expect = chai.expect;
+
+import Tailored from '../src/index.js';
+import ErlangTypes from 'erlang-types';
+const Tuple = ErlangTypes.Tuple;
+const BitString = ErlangTypes.BitString;
 
 const _ = Tailored.wildcard();
 const $ = Tailored.variable();
@@ -130,6 +135,165 @@ describe('defmatch', () => {
     );
 
     expect(fn([3, 1, 2, 4]).length).to.equal(3);
+  });
+
+  it('must match on tuple', () => {
+
+    let fn = Tailored.defmatch(
+      Tailored.clause(
+        [Tailored.type(Tuple, {values: [1, 2, 3]})],
+        () => 3
+      )
+    );
+
+    expect(fn(new Tuple(1, 2, 3))).to.equal(3);
+    expect(fn.bind(fn, new Tuple(1, 2, 4))).to.throw("No match for: {1, 2, 4}");
+  });
+
+  describe('BitString', () => {
+    it('must match on a string', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.integer(102), BitString.integer(111), BitString.integer(111))],
+          () => 3
+        )
+      );
+
+      expect(fn("foo")).to.equal(3);
+      expect(fn.bind(fn, "bar")).to.throw("No match for: bar");
+    });
+
+    it('must match on a bitstring', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.integer(102), BitString.integer(111), BitString.integer(111))],
+          () => 3
+        )
+      );
+
+      expect(fn(new BitString(BitString.integer(102), BitString.integer(111), BitString.integer(111)))).to.equal(3);
+    });
+
+    it('must allow for variables', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.integer({value: $}), BitString.integer(111), BitString.integer(111))],
+          (pattern) => pattern
+        )
+      );
+
+      expect(fn(new BitString(BitString.integer(102), BitString.integer(111), BitString.integer(111)))).to.equal(102);
+    });
+
+    it('must match on variable and convert to type', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.integer(102), BitString.binary({value: $}))],
+          (b) => b
+        )
+      );
+
+      expect(fn(new BitString(BitString.integer(102), BitString.integer(111), BitString.integer(111)))).to.equal("oo");
+    });
+
+    it('throw error when binary is used without size', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.binary({value: $}), BitString.binary(" the "), BitString.binary({value: $}))],
+          (name, species) => name
+        )
+      );
+
+      expect(fn.bind(fn, "Frank the Walrus")).to.throw("a binary field without size is only allowed at the end of a binary pattern");
+    });
+
+    it('allow binary pattern with size', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.size(BitString.binary({value: $}), 5), BitString.binary(" the "), BitString.binary({value: $}))],
+          (name, species) => name
+        )
+      );
+
+      expect(fn("Frank the Walrus")).to.equal("Frank");
+    });
+
+
+    it('allow unsigned integer', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.bitStringMatch(BitString.integer({value: $}))],
+          (int) => int
+        )
+      );
+
+      expect(fn(new BitString(BitString.integer(-100)))).to.equal(156);
+    });
+  });
+
+describe('Optional Arguments', () => {
+    it('single optional argument', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.variable(2)],
+          (arg) => arg
+        )
+      );
+
+      expect(fn()).to.equal(2);
+      expect(fn(3)).to.equal(3);
+    });
+
+
+    it('single optional argument and one required argument', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.variable(), Tailored.variable(2)],
+          (arg1, arg2) => arg1 + arg2
+        )
+      );
+
+      expect(fn.bind(fn)).to.throw("No match for:");
+      expect(fn(1)).to.equal(3);
+      expect(fn(3, 4)).to.equal(7);
+    });
+
+    it('two optional arguments and one required argument', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.variable(3), Tailored.variable(), Tailored.variable(2)],
+          (arg1, arg2, arg3) => arg1 + arg2 + arg3
+        )
+      );
+
+      expect(fn(1)).to.equal(6);
+      expect(fn(3, 4)).to.equal(9);
+    });
+
+
+    it('two optional arguments in between 2 required', () => {
+
+      let fn = Tailored.defmatch(
+        Tailored.clause(
+          [Tailored.variable(), Tailored.variable(2), Tailored.variable(3), Tailored.variable()],
+          (arg1, arg2, arg3, arg4) => arg1 + arg2 + arg3 + arg4
+        )
+      );
+
+      expect(fn(1, 4)).to.equal(10);
+      expect(fn(1, 5, 4)).to.equal(13);
+      expect(fn(1, 5, 7, 4)).to.equal(17);
+    });
   });
 
 });
