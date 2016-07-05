@@ -52,6 +52,22 @@ export function defmatch(...clauses) {
   };
 }
 
+export function defmatchgen(...clauses) {
+  return function*(...args) {
+    for (let processedClause of clauses) {
+      let result = [];
+      args = fillInOptionalValues(args, processedClause.arity, processedClause.optionals);
+
+      if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
+        return yield* processedClause.fn.apply(this, result);
+      }
+    }
+
+    console.error('No match for:', args);
+    throw new MatchError(args);
+  };
+}
+
 function getOptionalValues(pattern){
   let optionals = [];
 
