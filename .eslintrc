@@ -30,5 +30,4 @@
     },
     "ecmaFeatures": { modules: true },
     "extends": "eslint:recommended",
-    "plugins": ["flowtype"]
 }

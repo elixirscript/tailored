@@ -1,5 +1,3 @@
-/* @flow */
-
 import { buildMatch } from "./match";
 import * as Types from "./types";
 
@@ -36,20 +34,38 @@ export function clause(pattern, fn, guard = () => true) {
   return new Clause(pattern, fn, guard);
 }
 
+function trampoline(fn){  
+    return function(){
+        var res = fn.apply(this, arguments);
+        while(res instanceof Function){
+            res = res();
+        }
+        return res;
+    }
+}
+
 export function defmatch(...clauses) {
-  return function(...args) {
+  return trampoline(function(...args) {
+    let funcToCall = null;
+    let params = null;
     for (let processedClause of clauses) {
       let result = [];
       args = fillInOptionalValues(args, processedClause.arity, processedClause.optionals);
 
       if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
-        return processedClause.fn.apply(this, result);
+        funcToCall = processedClause.fn;
+        params = result;
+        break;
       }
     }
 
-    console.error('No match for:', args);
-    throw new MatchError(args);
-  };
+    if (!funcToCall) {
+      console.error('No match for:', args);
+      throw new MatchError(args);
+    }
+
+    return funcToCall.bind(this, ...params);
+  });
 }
 
 export function defmatchgen(...clauses) {
