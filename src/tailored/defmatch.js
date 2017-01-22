@@ -1,6 +1,8 @@
 import { buildMatch } from "./match";
 import * as Types from "./types";
 
+const FUNC = Symbol();
+
 export class MatchError extends Error {
   constructor(arg) {
     super();
@@ -35,10 +37,13 @@ export function clause(pattern, fn, guard = () => true) {
 }
 
 function trampoline(fn){  
-    return function(){
-        var res = fn.apply(this, arguments);
-        while(res instanceof Function){
-            res = res();
+    return function(...args){
+        let count = 0;
+        let res = fn.apply(this, args);
+        while(res[FUNC]){
+            res = res[FUNC]();
+            count = count + 1;
+            console.log(count)
         }
         return res;
     }
@@ -64,7 +69,7 @@ export function defmatch(...clauses) {
       throw new MatchError(args);
     }
 
-    return funcToCall.bind(this, ...params);
+    return { [FUNC]: funcToCall.bind(this, ...params) };
   });
 }
 

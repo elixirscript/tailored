@@ -22,4 +22,18 @@ describe('tailcall', () => {
     let response = fact(10);
     expect(response).to.equal(3628800);
   });
+
+  it('must work correctly', () => {
+
+    let loop = Tailored.defmatch(
+      Tailored.clause([$, $], (a, b) => loop(a, b))
+    );
+
+    let main = Tailored.defmatch(
+      Tailored.clause([], () => loop(1, 2))
+    );
+
+    let response = main();
+    expect(response).to.equal(3628800);
+  });  
 });
