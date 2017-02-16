@@ -7,23 +7,22 @@ export class MatchError extends Error {
   constructor(arg) {
     super();
 
-    if(typeof arg === 'symbol'){
-      this.message = 'No match for: ' + arg.toString();
-    } else if(Array.isArray(arg)){
-      let mappedValues = arg.map((x) => x.toString());
-      this.message = 'No match for: ' + mappedValues;
-    }else{
-      this.message = 'No match for: ' + arg;
+    if (typeof arg === "symbol") {
+      this.message = "No match for: " + arg.toString();
+    } else if (Array.isArray(arg)) {
+      let mappedValues = arg.map(x => x.toString());
+      this.message = "No match for: " + mappedValues;
+    } else {
+      this.message = "No match for: " + arg;
     }
 
-    this.stack = (new Error()).stack;
+    this.stack = new Error().stack;
     this.name = this.constructor.name;
   }
 }
 
-
 export class Clause {
-  constructor(pattern, fn, guard = () => true){
+  constructor(pattern, fn, guard = () => true) {
     this.pattern = buildMatch(pattern);
     this.arity = pattern.length;
     this.optionals = getOptionalValues(pattern);
@@ -36,17 +35,16 @@ export function clause(pattern, fn, guard = () => true) {
   return new Clause(pattern, fn, guard);
 }
 
-function trampoline(fn){  
-    return function(...args){
-        let count = 0;
-        let res = fn.apply(this, args);
-        while(res[FUNC]){
-            res = res[FUNC]();
-            count = count + 1;
-            console.log(count)
-        }
-        return res;
+function trampoline(fn) {
+  return function(...args) {
+    let count = 0;
+    let res = fn.apply(this, args);
+    while (res[FUNC]) {
+      res = res[FUNC]();
+      count = count + 1;
     }
+    return res;
+  };
 }
 
 export function defmatch(...clauses) {
@@ -55,9 +53,16 @@ export function defmatch(...clauses) {
     let params = null;
     for (let processedClause of clauses) {
       let result = [];
-      args = fillInOptionalValues(args, processedClause.arity, processedClause.optionals);
+      args = fillInOptionalValues(
+        args,
+        processedClause.arity,
+        processedClause.optionals
+      );
 
-      if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
+      if (
+        processedClause.pattern(args, result) &&
+          processedClause.guard.apply(this, result)
+      ) {
         funcToCall = processedClause.fn;
         params = result;
         break;
@@ -65,7 +70,7 @@ export function defmatch(...clauses) {
     }
 
     if (!funcToCall) {
-      console.error('No match for:', args);
+      console.error("No match for:", args);
       throw new MatchError(args);
     }
 
@@ -77,23 +82,33 @@ export function defmatchgen(...clauses) {
   return function*(...args) {
     for (let processedClause of clauses) {
       let result = [];
-      args = fillInOptionalValues(args, processedClause.arity, processedClause.optionals);
+      args = fillInOptionalValues(
+        args,
+        processedClause.arity,
+        processedClause.optionals
+      );
 
-      if (processedClause.pattern(args, result) && processedClause.guard.apply(this, result)) {
+      if (
+        processedClause.pattern(args, result) &&
+          processedClause.guard.apply(this, result)
+      ) {
         return yield* processedClause.fn.apply(this, result);
       }
     }
 
-    console.error('No match for:', args);
+    console.error("No match for:", args);
     throw new MatchError(args);
   };
 }
 
-function getOptionalValues(pattern){
+function getOptionalValues(pattern) {
   let optionals = [];
 
-  for(let i = 0; i < pattern.length; i++){
-    if(pattern[i] instanceof Types.Variable && pattern[i].default_value != Symbol.for("tailored.no_value")){
+  for (let i = 0; i < pattern.length; i++) {
+    if (
+      pattern[i] instanceof Types.Variable &&
+        pattern[i].default_value != Symbol.for("tailored.no_value")
+    ) {
       optionals.push([i, pattern[i].default_value]);
     }
   }
@@ -101,12 +116,12 @@ function getOptionalValues(pattern){
   return optionals;
 }
 
-function fillInOptionalValues(args, arity, optionals){
-  if(args.length === arity || optionals.length === 0){
+function fillInOptionalValues(args, arity, optionals) {
+  if (args.length === arity || optionals.length === 0) {
     return args;
   }
 
-  if(args.length + optionals.length < arity){
+  if (args.length + optionals.length < arity) {
     return args;
   }
 
@@ -115,9 +130,9 @@ function fillInOptionalValues(args, arity, optionals){
 
   let optionalsToUse = optionals.slice(optionalsToRemove);
 
-  for(let [index, value] of optionalsToUse){
+  for (let [index, value] of optionalsToUse) {
     args.splice(index, 0, value);
-    if(args.length === arity){
+    if (args.length === arity) {
       break;
     }
   }
@@ -128,20 +143,25 @@ function fillInOptionalValues(args, arity, optionals){
 export function match(pattern, expr, guard = () => true) {
   let result = [];
   let processedPattern = buildMatch(pattern);
-  if (processedPattern(expr, result) && guard.apply(this, result)){
+  if (processedPattern(expr, result) && guard.apply(this, result)) {
     return result;
-  }else{
-    console.error('No match for:', expr);
+  } else {
+    console.error("No match for:", expr);
     throw new MatchError(expr);
   }
 }
 
-export function match_or_default(pattern, expr, guard = () => true, default_value = null) {
+export function match_or_default(
+  pattern,
+  expr,
+  guard = () => true,
+  default_value = null
+) {
   let result = [];
   let processedPattern = buildMatch(pattern);
-  if (processedPattern(expr, result) && guard.apply(this, result)){
+  if (processedPattern(expr, result) && guard.apply(this, result)) {
     return result;
-  }else{
+  } else {
     return default_value;
   }
 }
