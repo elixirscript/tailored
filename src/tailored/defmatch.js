@@ -35,20 +35,18 @@ export function clause(pattern, fn, guard = () => true) {
   return new Clause(pattern, fn, guard);
 }
 
-function trampoline(fn) {
-  return function(...args) {
-    let count = 0;
-    let res = fn.apply(this, args);
-    while (res[FUNC]) {
-      res = res[FUNC]();
-      count = count + 1;
+export function trampoline(fn) {
+  return function() {
+    let res = fn.apply(this, arguments);
+    while (res instanceof Function) {
+      res = res();
     }
     return res;
   };
 }
 
 export function defmatch(...clauses) {
-  return trampoline(function(...args) {
+  return function(...args) {
     let funcToCall = null;
     let params = null;
     for (let processedClause of clauses) {
@@ -61,7 +59,7 @@ export function defmatch(...clauses) {
 
       if (
         processedClause.pattern(args, result) &&
-          processedClause.guard.apply(this, result)
+        processedClause.guard.apply(this, result)
       ) {
         funcToCall = processedClause.fn;
         params = result;
@@ -74,8 +72,8 @@ export function defmatch(...clauses) {
       throw new MatchError(args);
     }
 
-    return { [FUNC]: funcToCall.bind(this, ...params) };
-  });
+    return funcToCall.apply(this, params);
+  };
 }
 
 export function defmatchgen(...clauses) {
@@ -90,7 +88,7 @@ export function defmatchgen(...clauses) {
 
       if (
         processedClause.pattern(args, result) &&
-          processedClause.guard.apply(this, result)
+        processedClause.guard.apply(this, result)
       ) {
         return yield* processedClause.fn.apply(this, result);
       }
@@ -107,7 +105,7 @@ function getOptionalValues(pattern) {
   for (let i = 0; i < pattern.length; i++) {
     if (
       pattern[i] instanceof Types.Variable &&
-        pattern[i].default_value != Symbol.for("tailored.no_value")
+      pattern[i].default_value != Symbol.for("tailored.no_value")
     ) {
       optionals.push([i, pattern[i].default_value]);
     }

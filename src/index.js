@@ -5,7 +5,8 @@ import {
   Clause,
   clause,
   match_or_default,
-  defmatchgen
+  defmatchgen,
+  trampoline
 } from "./tailored/defmatch";
 import {
   variable,
@@ -44,5 +45,6 @@ export default {
   list_comprehension,
   list_generator,
   bitstring_generator,
-  bitstring_comprehension
+  bitstring_comprehension,
+  trampoline
 };
