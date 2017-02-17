@@ -1,5 +1,5 @@
 import { match_or_default } from "./defmatch";
-import { BitString } from "erlang-types";
+import ErlangTypes from "erlang-types";
 
 const NO_MATCH = Symbol();
 
@@ -92,6 +92,6 @@ export function bitstring_comprehension(expression, generators) {
     }
   }
 
-  result = result.map(x => BitString.integer(x));
-  return new BitString(...result);
+  result = result.map(x => ErlangTypes.BitString.integer(x));
+  return new ErlangTypes.BitString(...result);
 }
