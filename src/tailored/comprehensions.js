@@ -6,12 +6,23 @@ const NO_MATCH = Symbol();
 export function bitstring_generator(pattern, bitstring) {
   return function() {
     let returnResult = [];
-    for (let i of bitstring) {
-      const result = match_or_default(pattern, i, () => true, NO_MATCH);
+    let bsSlice = bitstring.slice(0, pattern.byte_size());
+    let i = 1;
+
+    while (bsSlice.byte_size == pattern.byte_size()) {
+      const result = match_or_default(pattern, bsSlice, () => true, NO_MATCH);
+
       if (result != NO_MATCH) {
         const [value] = result;
-        returnResult.push(value);
+        returnResult.push(result);
       }
+
+      bsSlice = bitstring.slice(
+        pattern.byte_size() * i,
+        pattern.byte_size() * (i + 1)
+      );
+
+      i++;
     }
 
     return returnResult;
@@ -34,7 +45,7 @@ export function list_generator(pattern, list) {
 }
 
 export function list_comprehension(expression, generators) {
-  const generatedValues = run_list_generators(generators.pop()(), generators);
+  const generatedValues = run_generators(generators.pop()(), generators);
 
   let result = [];
 
@@ -47,7 +58,7 @@ export function list_comprehension(expression, generators) {
   return result;
 }
 
-function run_list_generators(generator, generators) {
+function run_generators(generator, generators) {
   if (generators.length == 0) {
     return generator.map(x => {
       if (Array.isArray(x)) {
@@ -66,15 +77,12 @@ function run_list_generators(generator, generators) {
       }
     }
 
-    return run_list_generators(next_gen, generators);
+    return run_generators(next_gen, generators);
   }
 }
 
 export function bitstring_comprehension(expression, generators) {
-  const generatedValues = run_bitstring_generators(
-    generators.pop()(),
-    generators
-  );
+  const generatedValues = run_generators(generators.pop()(), generators);
 
   let result = [];
 
@@ -86,27 +94,4 @@ export function bitstring_comprehension(expression, generators) {
 
   result = result.map(x => BitString.integer(x));
   return new BitString(...result);
-}
-
-function run_bitstring_generators(generator, generators) {
-  if (generators.length == 0) {
-    return generator.map(x => {
-      if (Array.isArray(x)) {
-        return x;
-      } else {
-        return [x];
-      }
-    });
-  } else {
-    const list = generators.pop();
-
-    let next_gen = [];
-    for (let j of list()) {
-      for (let i of generator) {
-        next_gen.push([j].concat(i));
-      }
-    }
-
-    return run_bitstring_generators(next_gen, generators);
-  }
 }

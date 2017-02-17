@@ -86,13 +86,19 @@ describe("list comprehension", () => {
 
 describe("binary comprehension", () => {
   it("must work on simple case", () => {
-    let gen = Tailored.bitstring_generator($, new BitString(
-      BitString.integer(1),
-      BitString.integer(2),
-      BitString.integer(3)
-    ));
+    let gen = Tailored.bitstring_generator(
+      Tailored.bitStringMatch(BitString.integer({ value: $ })),
+      new BitString(
+        BitString.integer(1),
+        BitString.integer(2),
+        BitString.integer(3)
+      )
+    );
     let comp = Tailored.bitstring_comprehension(
-      Tailored.clause([$], x => x * 2),
+      Tailored.clause(
+        [Tailored.bitStringMatch(BitString.integer({ value: $ }))],
+        x => x * 2
+      ),
       [gen]
     );
 
