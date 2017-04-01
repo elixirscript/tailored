@@ -1,5 +1,5 @@
-import { buildMatch } from "./match";
-import * as Types from "./types";
+import { buildMatch } from './match';
+import * as Types from './types';
 
 const FUNC = Symbol();
 
@@ -7,13 +7,13 @@ export class MatchError extends Error {
   constructor(arg) {
     super();
 
-    if (typeof arg === "symbol") {
-      this.message = "No match for: " + arg.toString();
+    if (typeof arg === 'symbol') {
+      this.message = 'No match for: ' + arg.toString();
     } else if (Array.isArray(arg)) {
       let mappedValues = arg.map(x => x.toString());
-      this.message = "No match for: " + mappedValues;
+      this.message = 'No match for: ' + mappedValues;
     } else {
-      this.message = "No match for: " + arg;
+      this.message = 'No match for: ' + arg;
     }
 
     this.stack = new Error().stack;
@@ -46,15 +46,48 @@ export function trampoline(fn) {
 }
 
 export function defmatch(...clauses) {
+  const arities = getArityMap(clauses);
+
   return function(...args) {
+    let [funcToCall, params] = findMatchingFunction(args, arities);
+    return funcToCall.apply(this, params);
+  };
+}
+
+export function defmatchgen(...clauses) {
+  const arities = getArityMap(clauses);
+
+  return function*(...args) {
+    let [funcToCall, params] = findMatchingFunction(args, arities);
+    return yield* funcToCall.apply(this, params);
+  };
+}
+
+export function defmatchGen(...args) {
+  return defmatchgen(...args);
+}
+
+export function defmatchAsync(...clauses) {
+  const arities = getArityMap(clauses);
+
+  return async function(...args) {
+    let [funcToCall, params] = findMatchingFunction(args, arities);
+    return funcToCall.apply(this, params);
+  };
+}
+
+function findMatchingFunction(args, arities) {
+  if (arities.has(args.length)) {
+    const arityClauses = arities.get(args.length);
+
     let funcToCall = null;
     let params = null;
-    for (let processedClause of clauses) {
+    for (let processedClause of arityClauses) {
       let result = [];
       args = fillInOptionalValues(
         args,
         processedClause.arity,
-        processedClause.optionals
+        processedClause.optionals,
       );
 
       if (
@@ -68,35 +101,49 @@ export function defmatch(...clauses) {
     }
 
     if (!funcToCall) {
-      console.error("No match for:", args);
+      console.error('No match for:', args);
       throw new MatchError(args);
     }
 
-    return funcToCall.apply(this, params);
-  };
+    return [funcToCall, params];
+  } else {
+    console.error('Arity of', args.length, 'not found. No match for:', args);
+    throw new MatchError(args);
+  }
 }
 
-export function defmatchgen(...clauses) {
-  return function*(...args) {
-    for (let processedClause of clauses) {
-      let result = [];
-      args = fillInOptionalValues(
-        args,
-        processedClause.arity,
-        processedClause.optionals
-      );
+function getArityMap(clauses) {
+  let map = new Map();
 
-      if (
-        processedClause.pattern(args, result) &&
-        processedClause.guard.apply(this, result)
-      ) {
-        return yield* processedClause.fn.apply(this, result);
+  for (const clause of clauses) {
+    const range = getArityRange(clause);
+
+    for (const arity of range) {
+      let arityClauses = [];
+
+      if (map.has(arity)) {
+        arityClauses = map.get(arity);
       }
-    }
 
-    console.error("No match for:", args);
-    throw new MatchError(args);
-  };
+      arityClauses.push(clause);
+      map.set(arity, arityClauses);
+    }
+  }
+
+  return map;
+}
+
+function getArityRange(clause) {
+  const min = clause.arity - clause.optionals.length;
+  const max = clause.arity;
+
+  let range = [min];
+
+  while (range[range.length - 1] != max) {
+    range.push(range[range.length - 1] + 1);
+  }
+
+  return range;
 }
 
 function getOptionalValues(pattern) {
@@ -105,7 +152,7 @@ function getOptionalValues(pattern) {
   for (let i = 0; i < pattern.length; i++) {
     if (
       pattern[i] instanceof Types.Variable &&
-      pattern[i].default_value != Symbol.for("tailored.no_value")
+      pattern[i].default_value != Symbol.for('tailored.no_value')
     ) {
       optionals.push([i, pattern[i].default_value]);
     }
@@ -144,7 +191,7 @@ export function match(pattern, expr, guard = () => true) {
   if (processedPattern(expr, result) && guard.apply(this, result)) {
     return result;
   } else {
-    console.error("No match for:", expr);
+    console.error('No match for:', expr);
     throw new MatchError(expr);
   }
 }
@@ -153,7 +200,7 @@ export function match_or_default(
   pattern,
   expr,
   guard = () => true,
-  default_value = null
+  default_value = null,
 ) {
   let result = [];
   let processedPattern = buildMatch(pattern);

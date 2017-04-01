@@ -6,8 +6,9 @@ import {
   clause,
   match_or_default,
   defmatchgen,
-  trampoline
-} from "./tailored/defmatch";
+  defmatchGen,
+  defmatchAsync,
+} from './tailored/defmatch';
 import {
   variable,
   wildcard,
@@ -16,15 +17,15 @@ import {
   headTail,
   type,
   bound,
-  bitStringMatch
-} from "./tailored/types";
+  bitStringMatch,
+} from './tailored/types';
 
 import {
   list_generator,
   list_comprehension,
   bitstring_generator,
-  bitstring_comprehension
-} from "./tailored/comprehensions";
+  bitstring_comprehension,
+} from './tailored/comprehensions';
 
 export default {
   defmatch,
@@ -46,5 +47,6 @@ export default {
   list_generator,
   bitstring_generator,
   bitstring_comprehension,
-  trampoline
+  defmatchGen,
+  defmatchAsync,
 };
