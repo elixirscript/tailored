@@ -1,6 +1,6 @@
 {
   "name": "tailored",
-  "version": "2.4.0",
+  "version": "2.4.1",
   "description": "Pattern matching library",
   "main": "lib/tailored.js",
   "jsnext:main": "src/index.js",
