@@ -1,6 +1,6 @@
 {
   "name": "tailored",
-  "version": "2.4.2",
+  "version": "2.4.3",
   "description": "Pattern matching library",
   "main": "lib/tailored.js",
   "jsnext:main": "src/index.js",
@@ -27,6 +27,7 @@
     "rollup-plugin-babel": "^2.7.1"
   },
   "dependencies": {
-    "erlang-types": "^1.0.0"
+    "erlang-types": "^1.0.0",
+    "tailored": "^2.4.2"
   }
 }

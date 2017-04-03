@@ -877,6 +877,12 @@ supports-color@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/supports-color/-/supports-color-2.0.0.tgz#535d045ce6b6363fa40117084629995e9df324c7"
 
+tailored@^2.4.2:
+  version "2.4.2"
+  resolved "https://registry.yarnpkg.com/tailored/-/tailored-2.4.2.tgz#c2d9eb40d23f4b660791cf5f5b0ca997e5aa5171"
+  dependencies:
+    erlang-types "^1.0.0"
+
 to-fast-properties@^1.0.1:
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/to-fast-properties/-/to-fast-properties-1.0.2.tgz#f3f5c0c3ba7299a7ef99427e44633257ade43320"
