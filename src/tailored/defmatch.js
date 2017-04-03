@@ -71,8 +71,39 @@ export function defmatchAsync(...clauses) {
   const arities = getArityMap(clauses);
 
   return async function(...args) {
-    let [funcToCall, params] = findMatchingFunction(args, arities);
-    return funcToCall.apply(this, params);
+    if (arities.has(args.length)) {
+      const arityClauses = arities.get(args.length);
+
+      let funcToCall = null;
+      let params = null;
+      for (let processedClause of arityClauses) {
+        let result = [];
+        args = fillInOptionalValues(
+          args,
+          processedClause.arity,
+          processedClause.optionals,
+        );
+
+        if (
+          processedClause.pattern(args, result) &&
+          (await processedClause.guard.apply(this, result))
+        ) {
+          funcToCall = processedClause.fn;
+          params = result;
+          break;
+        }
+      }
+
+      if (!funcToCall) {
+        console.error('No match for:', args);
+        throw new MatchError(args);
+      }
+
+      return funcToCall.apply(this, params);
+    } else {
+      console.error('Arity of', args.length, 'not found. No match for:', args);
+      throw new MatchError(args);
+    }
   };
 }
 
