@@ -1,71 +1,45 @@
-/* @flow */
-import * as Checks from "./checks";
-import * as Resolvers from "./resolvers";
+import * as Resolvers from './resolvers';
+import {
+  Variable,
+  Wildcard,
+  HeadTail,
+  Capture,
+  Type,
+  StartsWith,
+  Bound,
+  BitStringMatch,
+} from './types';
+
+const patternMap = new Map();
+patternMap.set(Variable.prototype, Resolvers.resolveVariable);
+patternMap.set(Wildcard.prototype, Resolvers.resolveWildcard);
+patternMap.set(HeadTail.prototype, Resolvers.resolveHeadTail);
+patternMap.set(StartsWith.prototype, Resolvers.resolveStartsWith);
+patternMap.set(Capture.prototype, Resolvers.resolveCapture);
+patternMap.set(Bound.prototype, Resolvers.resolveBound);
+patternMap.set(Type.prototype, Resolvers.resolveType);
+patternMap.set(BitStringMatch.prototype, Resolvers.resolveBitString);
+patternMap.set(Number.prototype, Resolvers.resolveNumber);
+patternMap.set(Symbol.prototype, Resolvers.resolveSymbol);
+patternMap.set(Array.prototype, Resolvers.resolveArray);
+patternMap.set(String.prototype, Resolvers.resolveString);
+patternMap.set(Boolean.prototype, Resolvers.resolveBoolean);
+patternMap.set(Object.prototype, Resolvers.resolveObject);
 
 export function buildMatch(pattern) {
-
-  if(Checks.is_variable(pattern)){
-    return Resolvers.resolveVariable(pattern);
-  }
-
-  if(Checks.is_wildcard(pattern)){
-    return Resolvers.resolveWildcard(pattern);
-  }
-
-  if(Checks.is_undefined(pattern)){
-    return Resolvers.resolveWildcard(pattern);
-  }
-
-  if(Checks.is_headTail(pattern)){
-    return Resolvers.resolveHeadTail(pattern);
-  }
-
-  if(Checks.is_startsWith(pattern)){
-    return Resolvers.resolveStartsWith(pattern);
-  }
-
-  if(Checks.is_capture(pattern)){
-    return Resolvers.resolveCapture(pattern);
-  }
-
-  if(Checks.is_bound(pattern)){
-    return Resolvers.resolveBound(pattern);
-  }
-
-  if(Checks.is_type(pattern)){
-    return Resolvers.resolveType(pattern);
-  }
-
-  if(Checks.is_array(pattern)){
-    return Resolvers.resolveArray(pattern);
-  }
-
-  if(Checks.is_number(pattern)){
-    return Resolvers.resolveNumber(pattern);
-  }
-
-  if(Checks.is_string(pattern)){
-    return Resolvers.resolveString(pattern);
-  }
-
-  if(Checks.is_boolean(pattern)){
-    return Resolvers.resolveBoolean(pattern);
-  }
-
-  if(Checks.is_symbol(pattern)){
-    return Resolvers.resolveSymbol(pattern);
-  }
-
-  if(Checks.is_null(pattern)){
+  if (pattern === null) {
     return Resolvers.resolveNull(pattern);
   }
 
-  if(Checks.is_bitstring(pattern)){
-    return Resolvers.resolveBitString(pattern);
+  if (typeof pattern === 'undefined') {
+    return Resolvers.resolveWildcard(pattern);
   }
 
-  if(Checks.is_object(pattern)){
-    return Resolvers.resolveObject(pattern);
+  const type = pattern.constructor.prototype;
+  const resolver = patternMap.get(type);
+
+  if (resolver) {
+    return resolver(pattern);
   }
 
   return Resolvers.resolveNoMatch();

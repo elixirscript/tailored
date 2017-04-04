@@ -1,12 +1,21 @@
 /* @flow */
 
-import { Variable, Wildcard, HeadTail, Capture, Type, StartsWith, Bound, BitStringMatch } from "./types";
+import {
+  Variable,
+  Wildcard,
+  HeadTail,
+  Capture,
+  Type,
+  StartsWith,
+  Bound,
+  BitStringMatch,
+} from './types';
 
 function is_number(value) {
   return typeof value === 'number';
 }
 
-function is_string(value){
+function is_string(value) {
   return typeof value === 'string';
 }
 
@@ -18,16 +27,12 @@ function is_symbol(value) {
   return typeof value === 'symbol';
 }
 
-function is_null(value) {
-  return value === null;
-}
-
 function is_undefined(value) {
   return typeof value === 'undefined';
 }
 
-function is_function(value) {
-  return Object.prototype.toString.call(value) == '[object Function]';
+function is_object(value) {
+  return typeof value === 'object';
 }
 
 function is_variable(value) {
@@ -58,16 +63,20 @@ function is_bound(value) {
   return value instanceof Bound;
 }
 
-function is_object(value) {
-  return typeof value === 'object';
+function is_bitstring(value) {
+  return value instanceof BitStringMatch;
+}
+
+function is_null(value) {
+  return value === null;
 }
 
 function is_array(value) {
   return Array.isArray(value);
 }
 
-function is_bitstring(value) {
-  return value instanceof BitStringMatch;
+function is_function(value) {
+  return Object.prototype.toString.call(value) == '[object Function]';
 }
 
 export {
@@ -87,5 +96,5 @@ export {
   is_bound,
   is_object,
   is_array,
-  is_bitstring
+  is_bitstring,
 };
