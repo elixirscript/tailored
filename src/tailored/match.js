@@ -42,5 +42,9 @@ export function buildMatch(pattern) {
     return resolver(pattern);
   }
 
+  if (typeof pattern === 'object') {
+    return Resolvers.resolveObject(pattern);
+  }
+
   return Resolvers.resolveNoMatch();
 }

@@ -1,7 +1,9 @@
 'use strict';
 
-let expect = require('chai').expect;
-let Tailored = require('../lib/tailored');
+import Tailored from '../src/index.js';
+const expect = require('chai').expect;
+const ErlangTypes = require('erlang-types');
+const Tuple = ErlangTypes.Tuple;
 
 const _ = Tailored.wildcard();
 const $ = Tailored.variable();
@@ -18,16 +20,18 @@ describe('match', () => {
   });
 
   it('must match on multiple values when an array is given', () => {
-    let [a, ] = Tailored.match([$, 2, _, 4], [1, 2, 3, 4]);
+    let [a] = Tailored.match([$, 2, _, 4], [1, 2, 3, 4]);
     expect(a).to.equal(1);
   });
 
   it('must throw an error when there is no match', () => {
-    expect(Tailored.match.bind(Tailored.match, [$, 2, _, 4], 1)).to.throw("No match for: 1");
+    expect(Tailored.match.bind(Tailored.match, [$, 2, _, 4], 1)).to.throw(
+      'No match for: 1',
+    );
   });
 
   it('must match values in object', () => {
-    let [a] = Tailored.match({a: [1, $, 3]}, {a: [1, 2, 3]});
+    let [a] = Tailored.match({ a: [1, $, 3] }, { a: [1, 2, 3] });
     expect(a).to.equal(2);
   });
 
@@ -37,14 +41,26 @@ describe('match', () => {
     let [b] = Tailored.match(Tailored.capture(a), 1);
     expect(b).to.equal(1);
 
-    let c = {a: 1};
+    let c = { a: 1 };
 
-    let [d] = Tailored.match(Tailored.capture(c), {a: 1});
-    expect(d["a"]).to.equal(1);
+    let [d] = Tailored.match(Tailored.capture(c), { a: 1 });
+    expect(d['a']).to.equal(1);
   });
 
   it('must throw an error when capture value does not match', () => {
     let a = 1;
-    expect(Tailored.match.bind(Tailored.match, Tailored.capture(a), 2)).to.throw("No match for: 2");
+    expect(
+      Tailored.match.bind(Tailored.match, Tailored.capture(a), 2),
+    ).to.throw('No match for: 2');
+  });
+
+  it('must work with type values', () => {
+    let matches = Tailored.match_or_default(
+      new Tuple(Symbol.for('ok'), $),
+      new Tuple(Symbol.for('ok'), 1),
+    );
+
+    expect(matches.length).to.equal(1);
+    expect(matches[0]).to.equal(1);
   });
 });

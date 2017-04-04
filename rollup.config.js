@@ -6,6 +6,22 @@ export default {
   dest: 'lib/tailored.js',
   sourceMap: 'inline',
   format: 'cjs',
-  plugins: [babel()],
+  plugins: [
+    babel({
+      babelrc: false,
+      presets: [
+        [
+          'env',
+          {
+            targets: {
+              node: 'current',
+            },
+            modules: false,
+            loose: true,
+          },
+        ],
+      ],
+    }),
+  ],
   external: ['erlang-types'],
 };
