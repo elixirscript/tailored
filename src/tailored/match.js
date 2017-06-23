@@ -24,6 +24,7 @@ patternMap.set(Symbol.prototype, Resolvers.resolveSymbol);
 patternMap.set(Array.prototype, Resolvers.resolveArray);
 patternMap.set(String.prototype, Resolvers.resolveString);
 patternMap.set(Boolean.prototype, Resolvers.resolveBoolean);
+patternMap.set(Function.prototype, Resolvers.resolveFunction);
 patternMap.set(Object.prototype, Resolvers.resolveObject);
 
 export function buildMatch(pattern) {

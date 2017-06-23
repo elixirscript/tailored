@@ -329,5 +329,22 @@ describe('defmatch', () => {
       expect(fn(1, 5, 4)).to.equal(13);
       expect(fn(1, 5, 7, 4)).to.equal(17);
     });
+
+    it('must match on objects with symbol keys', () => {
+      const bound_value = {
+        [Symbol.for('__struct__')]: Symbol.for('Elixir.Blueprint.AssertError'),
+      };
+
+      const value = {
+        [Symbol.for('__struct__')]: Symbol.for('Elixir.Blueprint.AssertError'),
+        [Symbol.for('msg')]: 'somthing',
+      };
+
+      let fn = Tailored.defmatch(
+        Tailored.clause([Tailored.bound(bound_value)], val => true),
+      );
+
+      expect(fn(value)).to.equal(true);
+    });
   });
 });
