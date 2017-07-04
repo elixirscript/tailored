@@ -1,6 +1,6 @@
 {
   "name": "tailored",
-  "version": "2.4.6",
+  "version": "2.4.7",
   "description": "Pattern matching library",
   "main": "lib/tailored.js",
   "jsnext:main": "src/index.js",
@@ -8,10 +8,7 @@
     "build": "rollup -c rollup.config.js",
     "test": "mocha test --recursive --compilers js:babel-register"
   },
-  "keywords": [
-    "pattern-matching",
-    "functional"
-  ],
+  "keywords": ["pattern-matching", "functional"],
   "repository": {
     "type": "git",
     "url": "https://github.com/elixirscript/tailored.git"

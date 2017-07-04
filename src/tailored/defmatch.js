@@ -10,7 +10,16 @@ export class MatchError extends Error {
     if (typeof arg === 'symbol') {
       this.message = 'No match for: ' + arg.toString();
     } else if (Array.isArray(arg)) {
-      let mappedValues = arg.map(x => x.toString());
+      let mappedValues = arg.map(x => {
+        if (x === null) {
+          return 'null';
+        } else if (typeof x === 'undefined') {
+          return 'undefined';
+        }
+
+        return x.toString();
+      });
+
       this.message = 'No match for: ' + mappedValues;
     } else {
       this.message = 'No match for: ' + arg;
@@ -81,7 +90,7 @@ export function defmatchAsync(...clauses) {
         args = fillInOptionalValues(
           args,
           processedClause.arity,
-          processedClause.optionals,
+          processedClause.optionals
         );
 
         if (
@@ -118,7 +127,7 @@ function findMatchingFunction(args, arities) {
       args = fillInOptionalValues(
         args,
         processedClause.arity,
-        processedClause.optionals,
+        processedClause.optionals
       );
 
       if (
@@ -231,7 +240,7 @@ export function match_or_default(
   pattern,
   expr,
   guard = () => true,
-  default_value = null,
+  default_value = null
 ) {
   let result = [];
   let processedPattern = buildMatch(pattern);
