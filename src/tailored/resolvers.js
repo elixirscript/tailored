@@ -45,7 +45,6 @@ function resolveNull(pattern) {
 function resolveBound(pattern) {
   return function(value, args) {
     if (typeof value === typeof pattern.value && value === pattern.value) {
-      args.push(value);
       return true;
     }
 
@@ -137,7 +136,7 @@ function resolveObject(pattern) {
   let matches = {};
 
   const keys = Object.keys(pattern).concat(
-    Object.getOwnPropertySymbols(pattern),
+    Object.getOwnPropertySymbols(pattern)
   );
 
   for (let key of keys) {
@@ -168,7 +167,7 @@ function resolveBitString(pattern) {
       fillArray(patternBitString, size);
     } else {
       patternBitString = patternBitString.concat(
-        new BitString(bitstringMatchPart).value,
+        new BitString(bitstringMatchPart).value
       );
     }
   }
@@ -200,7 +199,7 @@ function resolveBitString(pattern) {
         i < patternValues.length - 1
       ) {
         throw new Error(
-          'a binary field without size is only allowed at the end of a binary pattern',
+          'a binary field without size is only allowed at the end of a binary pattern'
         );
       }
 
@@ -215,11 +214,11 @@ function resolveBitString(pattern) {
       } else {
         bsValueArrayPart = bsValue.value.slice(
           beginningIndex,
-          beginningIndex + size,
+          beginningIndex + size
         );
         patternBitStringArrayPart = patternBitString.slice(
           beginningIndex,
-          beginningIndex + size,
+          beginningIndex + size
         );
       }
 
@@ -252,31 +251,25 @@ function resolveBitString(pattern) {
 
           case 'binary':
             args.push(
-              String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart)),
+              String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart))
             );
             break;
 
           case 'utf8':
             args.push(
-              String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart)),
+              String.fromCharCode.apply(null, new Uint8Array(bsValueArrayPart))
             );
             break;
 
           case 'utf16':
             args.push(
-              String.fromCharCode.apply(
-                null,
-                new Uint16Array(bsValueArrayPart),
-              ),
+              String.fromCharCode.apply(null, new Uint16Array(bsValueArrayPart))
             );
             break;
 
           case 'utf32':
             args.push(
-              String.fromCharCode.apply(
-                null,
-                new Uint32Array(bsValueArrayPart),
-              ),
+              String.fromCharCode.apply(null, new Uint32Array(bsValueArrayPart))
             );
             break;
 
@@ -344,5 +337,5 @@ export {
   resolveBoolean,
   resolveFunction,
   resolveNull,
-  resolveBitString,
+  resolveBitString
 };
