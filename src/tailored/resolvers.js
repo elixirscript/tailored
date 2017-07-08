@@ -111,7 +111,7 @@ function resolveType(pattern) {
   return function(value, args) {
     if (value instanceof pattern.type) {
       const matches = buildMatch(pattern.objPattern);
-      return matches(value, args) && args.push(value) > 0;
+      return matches(value, args);
     }
 
     return false;

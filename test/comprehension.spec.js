@@ -1,18 +1,18 @@
-"use strict";
+'use strict';
 
-import chai from "chai";
+import chai from 'chai';
 var expect = chai.expect;
 
-import Tailored from "../src/index.js";
-import ErlangTypes from "erlang-types";
+import Tailored from '../src/index.js';
+import ErlangTypes from 'erlang-types';
 const Tuple = ErlangTypes.Tuple;
 const BitString = ErlangTypes.BitString;
 
 const _ = Tailored.wildcard();
 const $ = Tailored.variable();
 
-describe("list generator", () => {
-  it("must work on simple case", () => {
+describe('list generator', () => {
+  it('must work on simple case', () => {
     let gen = Tailored.list_generator($, [1, 2, 3, 4]);
 
     let result = [];
@@ -24,9 +24,9 @@ describe("list generator", () => {
     expect(result).to.eql([1, 2, 3, 4]);
   });
 
-  it("must only result matching values", () => {
+  it('must only result matching values', () => {
     let gen = Tailored.list_generator(
-      Tailored.type(Tuple, { values: [1, 2, 3] }),
+      Tailored.capture(Tailored.type(Tuple, { values: [1, 2, 3] })),
       [new Tuple(1, 2, 3), 2, 3, 4]
     );
 
@@ -40,15 +40,15 @@ describe("list generator", () => {
   });
 });
 
-describe("list comprehension", () => {
-  it("must work on simple case", () => {
+describe('list comprehension', () => {
+  it('must work on simple case', () => {
     let gen = Tailored.list_generator($, [1, 2, 3, 4]);
     let comp = Tailored.list_comprehension(Tailored.clause([$], x => x), [gen]);
 
     expect(comp).to.eql([1, 2, 3, 4]);
   });
 
-  it("must work on two generators", () => {
+  it('must work on two generators', () => {
     let gen = Tailored.list_generator($, [1, 2]);
     let gen2 = Tailored.list_generator($, [3, 4]);
     let comp = Tailored.list_comprehension(
@@ -59,7 +59,7 @@ describe("list comprehension", () => {
     expect(comp).to.eql([3, 4, 6, 8]);
   });
 
-  it("must work on three generators", () => {
+  it('must work on three generators', () => {
     let gen = Tailored.list_generator($, [1, 2]);
     let gen2 = Tailored.list_generator($, [3, 4]);
     let gen3 = Tailored.list_generator($, [5, 6]);
@@ -72,7 +72,7 @@ describe("list comprehension", () => {
     expect(comp).to.eql([15, 18, 20, 24, 30, 36, 40, 48]);
   });
 
-  it("must work with guards", () => {
+  it('must work with guards', () => {
     let gen = Tailored.list_generator($, [1, 2]);
     let gen2 = Tailored.list_generator($, [3, 4]);
     let comp = Tailored.list_comprehension(
@@ -84,8 +84,8 @@ describe("list comprehension", () => {
   });
 });
 
-describe("binary comprehension", () => {
-  it("must work on simple case", () => {
+describe('binary comprehension', () => {
+  it('must work on simple case', () => {
     let gen = Tailored.bitstring_generator(
       Tailored.bitStringMatch(BitString.integer({ value: $ })),
       new BitString(
@@ -102,10 +102,12 @@ describe("binary comprehension", () => {
       [gen]
     );
 
-    expect(comp).to.eql(new BitString(
-      BitString.integer(2),
-      BitString.integer(4),
-      BitString.integer(6)
-    ));
+    expect(comp).to.eql(
+      new BitString(
+        BitString.integer(2),
+        BitString.integer(4),
+        BitString.integer(6)
+      )
+    );
   });
 });
