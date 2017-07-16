@@ -1,38 +1,33 @@
 /* @flow */
 
 class Variable {
-
-  constructor(default_value = Symbol.for("tailored.no_value")) {
+  constructor(name = null, default_value = Symbol.for('tailored.no_value')) {
+    this.name = name;
     this.default_value = default_value;
   }
 }
 
 class Wildcard {
-  constructor() {
-  }
+  constructor() {}
 }
 
 class StartsWith {
-
   constructor(prefix) {
     this.prefix = prefix;
   }
 }
 
 class Capture {
-
   constructor(value) {
     this.value = value;
   }
 }
 
 class HeadTail {
-  constructor() {
-  }
+  constructor() {}
 }
 
 class Type {
-
   constructor(type, objPattern = {}) {
     this.type = type;
     this.objPattern = objPattern;
@@ -40,15 +35,13 @@ class Type {
 }
 
 class Bound {
-
   constructor(value) {
     this.value = value;
   }
 }
 
 class BitStringMatch {
-
-  constructor(...values){
+  constructor(...values) {
     this.values = values;
   }
 
@@ -60,32 +53,42 @@ class BitStringMatch {
     return this.byte_size() * 8;
   }
 
-  byte_size(){
+  byte_size() {
     let s = 0;
 
-    for(let val of this.values){
-      s = s + ((val.unit * val.size)/8);
+    for (let val of this.values) {
+      s = s + val.unit * val.size / 8;
     }
 
     return s;
   }
 
-  getValue(index){
+  getValue(index) {
     return this.values(index);
   }
 
-  getSizeOfValue(index){
+  getSizeOfValue(index) {
     let val = this.getValue(index);
     return val.unit * val.size;
   }
 
-  getTypeOfValue(index){
+  getTypeOfValue(index) {
     return this.getValue(index).type;
   }
 }
 
-function variable(default_value = Symbol.for("tailored.no_value")) {
-  return new Variable(default_value);
+class NamedVariableResult {
+  constructor(name, value) {
+    this.name = name;
+    this.value = value;
+  }
+}
+
+function variable(
+  name = null,
+  default_value = Symbol.for('tailored.no_value')
+) {
+  return new Variable(name, default_value);
 }
 
 function wildcard() {
@@ -112,8 +115,12 @@ function bound(value) {
   return new Bound(value);
 }
 
-function bitStringMatch(...values){
+function bitStringMatch(...values) {
   return new BitStringMatch(...values);
+}
+
+function namedVariableResult(name, value) {
+  return new NamedVariableResult(name, value);
 }
 
 export {
@@ -132,5 +139,7 @@ export {
   headTail,
   type,
   bound,
-  bitStringMatch
+  bitStringMatch,
+  NamedVariableResult,
+  namedVariableResult
 };

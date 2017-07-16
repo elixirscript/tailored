@@ -93,8 +93,12 @@ export function defmatchAsync(...clauses) {
           processedClause.optionals
         );
 
+        const doesMatch = processedClause.pattern(args, result);
+        const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+
         if (
-          processedClause.pattern(args, result) &&
+          doesMatch &&
+          allNamesMatch &&
           (await processedClause.guard.apply(this, result))
         ) {
           funcToCall = processedClause.fn;
@@ -130,12 +134,16 @@ function findMatchingFunction(args, arities) {
         processedClause.optionals
       );
 
+      const doesMatch = processedClause.pattern(args, result);
+      const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+
       if (
-        processedClause.pattern(args, result) &&
-        processedClause.guard.apply(this, result)
+        doesMatch &&
+        allNamesMatch &&
+        processedClause.guard.apply(this, filteredResult)
       ) {
         funcToCall = processedClause.fn;
-        params = result;
+        params = filteredResult;
         break;
       }
     }
@@ -228,12 +236,41 @@ function fillInOptionalValues(args, arity, optionals) {
 export function match(pattern, expr, guard = () => true) {
   let result = [];
   let processedPattern = buildMatch(pattern);
-  if (processedPattern(expr, result) && guard.apply(this, result)) {
-    return result;
+  const doesMatch = processedPattern(expr, result);
+  const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+
+  if (doesMatch && allNamesMatch && guard.apply(this, filteredResult)) {
+    return filteredResult;
   } else {
     console.error('No match for:', expr);
     throw new MatchError(expr);
   }
+}
+
+function checkNamedVariables(results) {
+  const namesMap = {};
+  const filteredResults = [];
+
+  for (let i = 0; i < results.length; i++) {
+    const current = results[i];
+    if (current instanceof Types.NamedVariableResult) {
+      if (namesMap[current.name] && namesMap[current.name] !== current.value) {
+        return [results, false];
+      } else if (
+        namesMap[current.name] &&
+        namesMap[current.name] === current.value
+      ) {
+        filteredResults.push(current.value);
+      } else {
+        namesMap[current.name] = current.value;
+        filteredResults.push(current.value);
+      }
+    } else {
+      filteredResults.push(current);
+    }
+  }
+
+  return [filteredResults, true];
 }
 
 export function match_or_default(
@@ -244,8 +281,11 @@ export function match_or_default(
 ) {
   let result = [];
   let processedPattern = buildMatch(pattern);
-  if (processedPattern(expr, result) && guard.apply(this, result)) {
-    return result;
+  const doesMatch = processedPattern(expr, result);
+  const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+
+  if (doesMatch && allNamesMatch && guard.apply(this, filteredResult)) {
+    return filteredResult;
   } else {
     return default_value;
   }

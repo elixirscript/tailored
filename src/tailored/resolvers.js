@@ -58,9 +58,14 @@ function resolveWildcard() {
   };
 }
 
-function resolveVariable() {
+function resolveVariable(pattern) {
   return function(value, args) {
-    args.push(value);
+    if (pattern.name === null || pattern.name.startsWith('_')) {
+      args.push(value);
+    } else {
+      args.push(Types.namedVariableResult(pattern.name, value));
+    }
+
     return true;
   };
 }

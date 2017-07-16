@@ -12,21 +12,6 @@ const _ = Tailored.wildcard();
 const $ = Tailored.variable();
 
 describe('defmatch', () => {
-  it('must correctly evaluate example', () => {
-    let fact = Tailored.defmatch(
-      Tailored.clause([0], () => 1),
-      Tailored.clause([$], n => n * fact(n - 1)),
-    );
-
-    let response = fact(0);
-    expect(response).to.equal(1);
-
-    response = fact(10);
-    expect(response).to.equal(3628800);
-  });
-});
-
-describe('defmatch', () => {
   it('must throw error when no match is found', () => {
     let fn = Tailored.defmatch(Tailored.clause([0], () => 1));
 
@@ -44,19 +29,19 @@ describe('defmatch', () => {
 
   it('must work symbols', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Symbol.for('infinity')], () => 1),
+      Tailored.clause([Symbol.for('infinity')], () => 1)
     );
 
     expect(fn(Symbol.for('infinity'))).to.equal(1);
     expect(fn.bind(fn, Symbol('infinity'))).to.throw(
-      'No match for: Symbol(infinity)',
+      'No match for: Symbol(infinity)'
     );
   });
 
   it('must match on values in object', () => {
     let fn = Tailored.defmatch(
       Tailored.clause([{ value: $ }], val => 1 + val),
-      Tailored.clause([{ a: { b: { c: $ } } }], val => 1 - val),
+      Tailored.clause([{ a: { b: { c: $ } } }], val => 1 - val)
     );
 
     expect(fn({ value: 20 })).to.equal(21);
@@ -66,7 +51,7 @@ describe('defmatch', () => {
   it('must match on objects even when value has more keys', () => {
     let fn = Tailored.defmatch(
       Tailored.clause([{ value: $ }], val => 1 + val),
-      Tailored.clause([{ a: { b: { c: $ } } }], val => 1 - val),
+      Tailored.clause([{ a: { b: { c: $ } } }], val => 1 - val)
     );
 
     expect(fn({ value: 20 })).to.equal(21);
@@ -75,7 +60,7 @@ describe('defmatch', () => {
 
   it('must match on substrings', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Tailored.startsWith('Bearer ')], token => token),
+      Tailored.clause([Tailored.startsWith('Bearer ')], token => token)
     );
 
     expect(fn('Bearer 1234')).to.equal('1234');
@@ -83,7 +68,7 @@ describe('defmatch', () => {
 
   it('must work with guards', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([$], number => number, number => number > 0),
+      Tailored.clause([$], number => number, number => number > 0)
     );
 
     expect(fn(3)).to.equal(3);
@@ -94,8 +79,8 @@ describe('defmatch', () => {
     let fn = Tailored.defmatch(
       Tailored.clause(
         [Tailored.capture({ a: { b: { c: $ } } })],
-        (val, bound_value) => bound_value['a']['b']['c'],
-      ),
+        (val, bound_value) => bound_value['a']['b']['c']
+      )
     );
 
     expect(fn({ a: { b: { c: 20 } } })).to.equal(20);
@@ -103,8 +88,8 @@ describe('defmatch', () => {
     fn = Tailored.defmatch(
       Tailored.clause(
         [Tailored.capture([1, $, 3, $])],
-        (a, b, bound_value) => bound_value.length,
-      ),
+        (a, b, bound_value) => bound_value.length
+      )
     );
 
     expect(fn([1, 2, 3, 4])).to.equal(4);
@@ -112,8 +97,8 @@ describe('defmatch', () => {
     fn = Tailored.defmatch(
       Tailored.clause(
         [Tailored.capture([1, Tailored.capture({ a: { b: { c: $ } } }), 3, $])],
-        (c, two, four, arg) => two['a']['b']['c'],
-      ),
+        (c, two, four, arg) => two['a']['b']['c']
+      )
     );
 
     expect(fn([1, { a: { b: { c: 20 } } }, 3, 4])).to.equal(20);
@@ -121,7 +106,7 @@ describe('defmatch', () => {
 
   it('must produce a head and a tail', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Tailored.headTail()], (head, tail) => tail),
+      Tailored.clause([Tailored.headTail()], (head, tail) => tail)
     );
 
     expect(fn([3, 1, 2, 4]).length).to.equal(3);
@@ -129,7 +114,7 @@ describe('defmatch', () => {
 
   it('must match on tuple', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Tailored.type(Tuple, { values: [1, 2, 3] })], () => 3),
+      Tailored.clause([Tailored.type(Tuple, { values: [1, 2, 3] })], () => 3)
     );
 
     expect(fn(new Tuple(1, 2, 3))).to.equal(3);
@@ -144,11 +129,11 @@ describe('defmatch', () => {
             Tailored.bitStringMatch(
               BitString.integer(102),
               BitString.integer(111),
-              BitString.integer(111),
-            ),
+              BitString.integer(111)
+            )
           ],
-          () => 3,
-        ),
+          () => 3
+        )
       );
 
       expect(fn('foo')).to.equal(3);
@@ -162,11 +147,11 @@ describe('defmatch', () => {
             Tailored.bitStringMatch(
               BitString.integer(102),
               BitString.integer(111),
-              BitString.integer(111),
-            ),
+              BitString.integer(111)
+            )
           ],
-          () => 3,
-        ),
+          () => 3
+        )
       );
 
       expect(
@@ -174,9 +159,9 @@ describe('defmatch', () => {
           new BitString(
             BitString.integer(102),
             BitString.integer(111),
-            BitString.integer(111),
-          ),
-        ),
+            BitString.integer(111)
+          )
+        )
       ).to.equal(3);
     });
 
@@ -187,11 +172,11 @@ describe('defmatch', () => {
             Tailored.bitStringMatch(
               BitString.integer({ value: $ }),
               BitString.integer(111),
-              BitString.integer(111),
-            ),
+              BitString.integer(111)
+            )
           ],
-          pattern => pattern,
-        ),
+          pattern => pattern
+        )
       );
 
       expect(
@@ -199,9 +184,9 @@ describe('defmatch', () => {
           new BitString(
             BitString.integer(102),
             BitString.integer(111),
-            BitString.integer(111),
-          ),
-        ),
+            BitString.integer(111)
+          )
+        )
       ).to.equal(102);
     });
 
@@ -211,11 +196,11 @@ describe('defmatch', () => {
           [
             Tailored.bitStringMatch(
               BitString.integer(102),
-              BitString.binary({ value: $ }),
-            ),
+              BitString.binary({ value: $ })
+            )
           ],
-          b => b,
-        ),
+          b => b
+        )
       );
 
       expect(
@@ -223,9 +208,9 @@ describe('defmatch', () => {
           new BitString(
             BitString.integer(102),
             BitString.integer(111),
-            BitString.integer(111),
-          ),
-        ),
+            BitString.integer(111)
+          )
+        )
       ).to.equal('oo');
     });
 
@@ -236,15 +221,15 @@ describe('defmatch', () => {
             Tailored.bitStringMatch(
               BitString.binary({ value: $ }),
               BitString.binary(' the '),
-              BitString.binary({ value: $ }),
-            ),
+              BitString.binary({ value: $ })
+            )
           ],
-          (name, species) => name,
-        ),
+          (name, species) => name
+        )
       );
 
       expect(fn.bind(fn, 'Frank the Walrus')).to.throw(
-        'a binary field without size is only allowed at the end of a binary pattern',
+        'a binary field without size is only allowed at the end of a binary pattern'
       );
     });
 
@@ -255,11 +240,11 @@ describe('defmatch', () => {
             Tailored.bitStringMatch(
               BitString.size(BitString.binary({ value: $ }), 5),
               BitString.binary(' the '),
-              BitString.binary({ value: $ }),
-            ),
+              BitString.binary({ value: $ })
+            )
           ],
-          (name, species) => name,
-        ),
+          (name, species) => name
+        )
       );
 
       expect(fn('Frank the Walrus')).to.equal('Frank');
@@ -269,8 +254,8 @@ describe('defmatch', () => {
       let fn = Tailored.defmatch(
         Tailored.clause(
           [Tailored.bitStringMatch(BitString.integer({ value: $ }))],
-          int => int,
-        ),
+          int => int
+        )
       );
 
       expect(fn(new BitString(BitString.integer(-100)))).to.equal(156);
@@ -280,7 +265,7 @@ describe('defmatch', () => {
   describe('Optional Arguments', () => {
     it('single optional argument', () => {
       let fn = Tailored.defmatch(
-        Tailored.clause([Tailored.variable(2)], arg => arg),
+        Tailored.clause([Tailored.variable(null, 2)], arg => arg)
       );
 
       expect(fn()).to.equal(2);
@@ -290,9 +275,9 @@ describe('defmatch', () => {
     it('single optional argument and one required argument', () => {
       let fn = Tailored.defmatch(
         Tailored.clause(
-          [Tailored.variable(), Tailored.variable(2)],
-          (arg1, arg2) => arg1 + arg2,
-        ),
+          [Tailored.variable(), Tailored.variable(null, 2)],
+          (arg1, arg2) => arg1 + arg2
+        )
       );
 
       expect(fn.bind(fn)).to.throw('No match for:');
@@ -303,9 +288,13 @@ describe('defmatch', () => {
     it('two optional arguments and one required argument', () => {
       let fn = Tailored.defmatch(
         Tailored.clause(
-          [Tailored.variable(3), Tailored.variable(), Tailored.variable(2)],
-          (arg1, arg2, arg3) => arg1 + arg2 + arg3,
-        ),
+          [
+            Tailored.variable(null, 3),
+            Tailored.variable(),
+            Tailored.variable(null, 2)
+          ],
+          (arg1, arg2, arg3) => arg1 + arg2 + arg3
+        )
       );
 
       expect(fn(1)).to.equal(6);
@@ -317,12 +306,12 @@ describe('defmatch', () => {
         Tailored.clause(
           [
             Tailored.variable(),
-            Tailored.variable(2),
-            Tailored.variable(3),
-            Tailored.variable(),
+            Tailored.variable(null, 2),
+            Tailored.variable(null, 3),
+            Tailored.variable()
           ],
-          (arg1, arg2, arg3, arg4) => arg1 + arg2 + arg3 + arg4,
-        ),
+          (arg1, arg2, arg3, arg4) => arg1 + arg2 + arg3 + arg4
+        )
       );
 
       expect(fn(1, 4)).to.equal(10);
@@ -332,16 +321,16 @@ describe('defmatch', () => {
 
     it('must match on objects with symbol keys', () => {
       const bound_value = {
-        [Symbol.for('__struct__')]: Symbol.for('Elixir.Blueprint.AssertError'),
+        [Symbol.for('__struct__')]: Symbol.for('Elixir.Blueprint.AssertError')
       };
 
       const value = {
         [Symbol.for('__struct__')]: Symbol.for('Elixir.Blueprint.AssertError'),
-        [Symbol.for('msg')]: 'somthing',
+        [Symbol.for('msg')]: 'somthing'
       };
 
       let fn = Tailored.defmatch(
-        Tailored.clause([Tailored.bound(bound_value)], val => true),
+        Tailored.clause([Tailored.bound(bound_value)], val => true)
       );
 
       expect(fn(value)).to.equal(true);
