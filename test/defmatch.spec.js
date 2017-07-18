@@ -330,7 +330,24 @@ describe('defmatch', () => {
       };
 
       let fn = Tailored.defmatch(
-        Tailored.clause([Tailored.bound(bound_value)], val => true)
+        Tailored.clause([Tailored.capture(bound_value)], val => true)
+      );
+
+      expect(fn(value)).to.equal(true);
+    });
+
+    it('must match on maps with symbol keys', () => {
+      const bound_value = new Map([
+        [Symbol.for('__struct__'), Symbol.for('Elixir.Blueprint.AssertError')]
+      ]);
+
+      const value = new Map([
+        [Symbol.for('__struct__'), Symbol.for('Elixir.Blueprint.AssertError')],
+        [Symbol.for('msg'), 'something']
+      ]);
+
+      let fn = Tailored.defmatch(
+        Tailored.clause([Tailored.capture(bound_value)], val => true)
       );
 
       expect(fn(value)).to.equal(true);

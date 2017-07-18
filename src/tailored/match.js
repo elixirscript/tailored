@@ -7,7 +7,7 @@ import {
   Type,
   StartsWith,
   Bound,
-  BitStringMatch,
+  BitStringMatch
 } from './types';
 
 const patternMap = new Map();
@@ -21,6 +21,7 @@ patternMap.set(Type.prototype, Resolvers.resolveType);
 patternMap.set(BitStringMatch.prototype, Resolvers.resolveBitString);
 patternMap.set(Number.prototype, Resolvers.resolveNumber);
 patternMap.set(Symbol.prototype, Resolvers.resolveSymbol);
+patternMap.set(Map.prototype, Resolvers.resolveMap);
 patternMap.set(Array.prototype, Resolvers.resolveArray);
 patternMap.set(String.prototype, Resolvers.resolveString);
 patternMap.set(Boolean.prototype, Resolvers.resolveBoolean);

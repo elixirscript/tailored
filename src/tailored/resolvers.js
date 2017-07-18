@@ -137,6 +137,30 @@ function resolveArray(pattern) {
   };
 }
 
+function resolveMap(pattern) {
+  let matches = new Map();
+
+  const keys = pattern.keys();
+
+  for (let key of keys) {
+    matches.set(key, buildMatch(pattern.get(key)));
+  }
+
+  return function(value, args) {
+    if (!Checks.is_map(value) || pattern.size > value.size) {
+      return false;
+    }
+
+    for (let key of keys) {
+      if (!value.has(key) || !matches.get(key)(value.get(key), args)) {
+        return false;
+      }
+    }
+
+    return true;
+  };
+}
+
 function resolveObject(pattern) {
   let matches = {};
 
@@ -342,5 +366,6 @@ export {
   resolveBoolean,
   resolveFunction,
   resolveNull,
-  resolveBitString
+  resolveBitString,
+  resolveMap
 };

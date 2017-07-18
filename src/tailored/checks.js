@@ -8,7 +8,7 @@ import {
   Type,
   StartsWith,
   Bound,
-  BitStringMatch,
+  BitStringMatch
 } from './types';
 
 function is_number(value) {
@@ -79,6 +79,10 @@ function is_function(value) {
   return Object.prototype.toString.call(value) == '[object Function]';
 }
 
+function is_map(value) {
+  return value instanceof Map;
+}
+
 export {
   is_number,
   is_string,
@@ -97,4 +101,5 @@ export {
   is_object,
   is_array,
   is_bitstring,
+  is_map
 };
