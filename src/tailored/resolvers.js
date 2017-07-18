@@ -140,7 +140,7 @@ function resolveArray(pattern) {
 function resolveMap(pattern) {
   let matches = new Map();
 
-  const keys = pattern.keys();
+  const keys = Array.from(pattern.keys());
 
   for (let key of keys) {
     matches.set(key, buildMatch(pattern.get(key)));

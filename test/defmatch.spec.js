@@ -352,5 +352,25 @@ describe('defmatch', () => {
 
       expect(fn(value)).to.equal(true);
     });
+
+    it('must work with maps', () => {
+      const pattern = [
+        new Map([
+          [Symbol.for('a'), 1],
+          [Symbol.for('b'), Tailored.variable('b')],
+          [Symbol.for('c'), Tailored.variable('c')]
+        ])
+      ];
+
+      const value = new Map([
+        [Symbol.for('a'), 1],
+        [Symbol.for('b'), 2],
+        [Symbol.for('c'), 3]
+      ]);
+
+      let fn = Tailored.defmatch(Tailored.clause(pattern, (b, c) => b + c));
+
+      expect(fn(value)).to.equal(5);
+    });
   });
 });
