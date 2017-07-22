@@ -60,9 +60,9 @@ function resolveWildcard() {
 
 function resolveVariable(pattern) {
   return function(value, args) {
-    if (pattern.name === null || pattern.name.startsWith('_')) {
+    if (pattern.name === null) {
       args.push(value);
-    } else {
+    } else if (!pattern.name.startsWith('_')) {
       args.push(Types.namedVariableResult(pattern.name, value));
     }
 

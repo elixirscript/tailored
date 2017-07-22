@@ -89,7 +89,6 @@ describe('match', () => {
       [3, 4]
     );
 
-    expect(matches.length).to.equal(2);
-    expect(matches[0]).to.equal(3);
+    expect(matches.length).to.equal(0);
   });
 });
