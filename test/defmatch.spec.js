@@ -112,6 +112,14 @@ describe('defmatch', () => {
     expect(fn([3, 1, 2, 4]).length).to.equal(3);
   });
 
+  it('must produce a head and a tail with one element array', () => {
+    let fn = Tailored.defmatch(
+      Tailored.clause([Tailored.headTail()], (head, tail) => tail)
+    );
+
+    expect(fn([3]).length).to.equal(0);
+  });
+
   it('must match on tuple', () => {
     let fn = Tailored.defmatch(
       Tailored.clause([Tailored.type(Tuple, { values: [1, 2, 3] })], () => 3)

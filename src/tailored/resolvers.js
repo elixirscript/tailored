@@ -72,7 +72,7 @@ function resolveVariable(pattern) {
 
 function resolveHeadTail() {
   return function(value, args) {
-    if (!Checks.is_array(value) || value.length < 2) {
+    if (!Checks.is_array(value) || value.length === 0) {
       return false;
     }
 
