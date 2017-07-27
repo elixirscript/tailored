@@ -70,7 +70,10 @@ function resolveVariable(pattern) {
   };
 }
 
-function resolveHeadTail() {
+function resolveHeadTail(pattern) {
+  const headMatches = buildMatch(pattern.head);
+  const tailMatches = buildMatch(pattern.tail);
+
   return function(value, args) {
     if (!Checks.is_array(value) || value.length === 0) {
       return false;
@@ -79,10 +82,11 @@ function resolveHeadTail() {
     const head = value[0];
     const tail = value.slice(1);
 
-    args.push(head);
-    args.push(tail);
+    if (headMatches(head, args) && tailMatches(tail, args)) {
+      return true;
+    }
 
-    return true;
+    return false;
   };
 }
 

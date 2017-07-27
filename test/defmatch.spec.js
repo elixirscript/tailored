@@ -106,7 +106,7 @@ describe('defmatch', () => {
 
   it('must produce a head and a tail', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Tailored.headTail()], (head, tail) => tail)
+      Tailored.clause([Tailored.headTail($, $)], (head, tail) => tail)
     );
 
     expect(fn([3, 1, 2, 4]).length).to.equal(3);
@@ -114,7 +114,7 @@ describe('defmatch', () => {
 
   it('must produce a head and a tail with one element array', () => {
     let fn = Tailored.defmatch(
-      Tailored.clause([Tailored.headTail()], (head, tail) => tail)
+      Tailored.clause([Tailored.headTail($, $)], (head, tail) => tail)
     );
 
     expect(fn([3]).length).to.equal(0);

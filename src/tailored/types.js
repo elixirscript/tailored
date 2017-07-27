@@ -24,7 +24,10 @@ class Capture {
 }
 
 class HeadTail {
-  constructor() {}
+  constructor(head, tail) {
+    this.head = head;
+    this.tail = tail;
+  }
 }
 
 class Type {
@@ -103,8 +106,8 @@ function capture(value) {
   return new Capture(value);
 }
 
-function headTail() {
-  return new HeadTail();
+function headTail(head, tail) {
+  return new HeadTail(head, tail);
 }
 
 function type(type, objPattern = {}) {
