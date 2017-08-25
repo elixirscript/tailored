@@ -5,9 +5,10 @@ import {
   Clause,
   clause,
   match_or_default,
+  match_or_default_async,
   defmatchgen,
   defmatchGen,
-  defmatchAsync,
+  defmatchAsync
 } from './tailored/defmatch';
 import {
   variable,
@@ -17,14 +18,14 @@ import {
   headTail,
   type,
   bound,
-  bitStringMatch,
+  bitStringMatch
 } from './tailored/types';
 
 import {
   list_generator,
   list_comprehension,
   bitstring_generator,
-  bitstring_comprehension,
+  bitstring_comprehension
 } from './tailored/comprehensions';
 
 export default {
@@ -42,11 +43,12 @@ export default {
   clause,
   bitStringMatch,
   match_or_default,
+  match_or_default_async,
   defmatchgen,
   list_comprehension,
   list_generator,
   bitstring_generator,
   bitstring_comprehension,
   defmatchGen,
-  defmatchAsync,
+  defmatchAsync
 };

@@ -99,10 +99,10 @@ export function defmatchAsync(...clauses) {
         if (
           doesMatch &&
           allNamesMatch &&
-          (await processedClause.guard.apply(this, result))
+          (await processedClause.guard.apply(this, filteredResult))
         ) {
           funcToCall = processedClause.fn;
-          params = result;
+          params = filteredResult;
           break;
         }
       }
@@ -285,6 +285,25 @@ export function match_or_default(
   const [filteredResult, allNamesMatch] = checkNamedVariables(result);
 
   if (doesMatch && allNamesMatch && guard.apply(this, filteredResult)) {
+    return filteredResult;
+  } else {
+    return default_value;
+  }
+}
+
+export async function match_or_default_async(
+  pattern,
+  expr,
+  guard = async () => true,
+  default_value = null
+) {
+  let result = [];
+  let processedPattern = buildMatch(pattern);
+  const doesMatch = processedPattern(expr, result);
+  const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+  const matches = doesMatch && allNamesMatch;
+
+  if (matches && (await guard.apply(this, filteredResult))) {
     return filteredResult;
   } else {
     return default_value;
