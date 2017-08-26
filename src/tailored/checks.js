@@ -76,7 +76,7 @@ function is_array(value) {
 }
 
 function is_function(value) {
-  return Object.prototype.toString.call(value) == '[object Function]';
+  return typeof value === 'function' || value instanceof Function;
 }
 
 function is_map(value) {

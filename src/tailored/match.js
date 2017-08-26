@@ -37,6 +37,10 @@ export function buildMatch(pattern) {
     return Resolvers.resolveWildcard(pattern);
   }
 
+  if (typeof pattern === 'function') {
+    return Resolvers.resolveFunction(pattern);
+  }
+
   const type = pattern.constructor.prototype;
   const resolver = patternMap.get(type);
 

@@ -25,7 +25,6 @@ export class MatchError extends Error {
       this.message = 'No match for: ' + arg;
     }
 
-    this.stack = new Error().stack;
     this.name = this.constructor.name;
   }
 }

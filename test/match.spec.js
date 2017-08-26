@@ -91,4 +91,10 @@ describe('match', () => {
 
     expect(matches.length).to.equal(0);
   });
+
+  it('matches async function', () => {
+    const f = async function() {};
+    let matches = Tailored.match_or_default(f, f);
+    expect(matches.length).to.equal(0);
+  });
 });
