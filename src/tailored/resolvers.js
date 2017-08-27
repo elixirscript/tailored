@@ -62,7 +62,7 @@ function resolveVariable(pattern) {
   return function(value, args) {
     if (pattern.name === null) {
       args.push(value);
-    } else if (!pattern.name.startsWith('_')) {
+    } else if (pattern.name !== '_') {
       args.push(Types.namedVariableResult(pattern.name, value));
     }
 

@@ -83,15 +83,6 @@ describe('match', () => {
     expect(matches).to.equal(null);
   });
 
-  it('must match variable names with underscores with values are different', () => {
-    let matches = Tailored.match_or_default(
-      [Tailored.variable('_name'), Tailored.variable('_name')],
-      [3, 4]
-    );
-
-    expect(matches.length).to.equal(0);
-  });
-
   it('matches async function', () => {
     const f = async function() {};
     let matches = Tailored.match_or_default(f, f);
