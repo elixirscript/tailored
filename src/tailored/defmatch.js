@@ -290,6 +290,25 @@ export function match_or_default(
   }
 }
 
+export function* match_or_default_gen(
+  pattern,
+  expr,
+  guard = function* () { return true },
+  default_value = null
+) {
+  let result = [];
+  let processedPattern = buildMatch(pattern);
+  const doesMatch = processedPattern(expr, result);
+  const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+  const matches = doesMatch && allNamesMatch;
+
+  if (matches && (yield* guard.apply(this, filteredResult))) {
+    return filteredResult;
+  } else {
+    return default_value;
+  }
+}
+
 export async function match_or_default_async(
   pattern,
   expr,
