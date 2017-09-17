@@ -11,6 +11,8 @@ import {
   BitStringMatch
 } from './types';
 
+import ErlangTypes from 'erlang-types';
+
 function is_number(value) {
   return typeof value === 'number';
 }
@@ -83,6 +85,18 @@ function is_map(value) {
   return value instanceof Map;
 }
 
+function is_pid(value) {
+  return value instanceof ErlangTypes.PID;
+}
+
+function is_tuple(value) {
+  return value instanceof ErlangTypes.Tuple;
+}
+
+function is_reference(value) {
+  return value instanceof ErlangTypes.Reference;
+}
+
 export {
   is_number,
   is_string,
@@ -101,5 +115,8 @@ export {
   is_object,
   is_array,
   is_bitstring,
-  is_map
+  is_map,
+  is_tuple,
+  is_pid,
+  is_reference,
 };

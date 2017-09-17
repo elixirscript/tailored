@@ -5,6 +5,7 @@ import * as Types from './types';
 import { buildMatch } from './match';
 import ErlangTypes from 'erlang-types';
 const BitString = ErlangTypes.BitString;
+import Utils from './utils'
 
 function resolveSymbol(pattern) {
   return function(value) {
@@ -155,8 +156,8 @@ function resolveMap(pattern) {
       return false;
     }
 
-    for (let key of keys) {
-      if (!value.has(key) || !matches.get(key)(value.get(key), args)) {
+    for (const key of keys) {
+      if (!Utils.has(value, key) || !Utils.get(matches, key)(Utils.get(value, key), args)) {
         return false;
       }
     }

@@ -5,6 +5,7 @@ import {
   Clause,
   clause,
   match_or_default,
+  match_or_default_gen,
   match_or_default_async,
   defmatchgen,
   defmatchGen,

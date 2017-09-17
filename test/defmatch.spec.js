@@ -380,5 +380,25 @@ describe('defmatch', () => {
 
       expect(fn(value)).to.equal(5);
     });
+
+    it('works with bound keys', () => {
+      const key0 = new Tuple(1)
+
+      const map0 = new Map([
+        [new Tuple(1), "pie"]
+      ])
+
+      const map = new Map([
+        [key0, Tailored.variable('value')]
+      ])
+
+      const v = Tailored.defmatch(Tailored.clause([map], (value0) => {
+        return value0;
+      }, (value0) => {
+          return true;
+      })).call(this, map0)
+
+      expect(v).to.equal('pie')
+    })
   });
 });
