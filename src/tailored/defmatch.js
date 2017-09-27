@@ -66,8 +66,43 @@ export function defmatchgen(...clauses) {
   const arities = getArityMap(clauses);
 
   return function*(...args) {
-    let [funcToCall, params] = findMatchingFunction(args, arities);
-    return yield* funcToCall.apply(this, params);
+    if (arities.has(args.length)) {
+      const arityClauses = arities.get(args.length);
+
+      let funcToCall = null;
+      let params = null;
+      for (let processedClause of arityClauses) {
+        let result = [];
+        args = fillInOptionalValues(
+          args,
+          processedClause.arity,
+          processedClause.optionals
+        );
+
+        const doesMatch = processedClause.pattern(args, result);
+        const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+
+        if (
+          doesMatch &&
+          allNamesMatch &&
+          (yield* processedClause.guard.apply(this, filteredResult))
+        ) {
+          funcToCall = processedClause.fn;
+          params = filteredResult;
+          break;
+        }
+      }
+
+      if (!funcToCall) {
+        console.error('No match for:', args);
+        throw new MatchError(args);
+      }
+
+      return yield* funcToCall.apply(this, params);
+    } else {
+      console.error('Arity of', args.length, 'not found. No match for:', args);
+      throw new MatchError(args);
+    }
   };
 }
 
@@ -239,6 +274,25 @@ export function match(pattern, expr, guard = () => true) {
   const [filteredResult, allNamesMatch] = checkNamedVariables(result);
 
   if (doesMatch && allNamesMatch && guard.apply(this, filteredResult)) {
+    return filteredResult;
+  } else {
+    console.error('No match for:', expr);
+    throw new MatchError(expr);
+  }
+}
+
+export function* match_gen(
+  pattern,
+  expr,
+  guard = function* () { return true }
+) {
+  let result = [];
+  let processedPattern = buildMatch(pattern);
+  const doesMatch = processedPattern(expr, result);
+  const [filteredResult, allNamesMatch] = checkNamedVariables(result);
+  const matches = doesMatch && allNamesMatch;
+
+  if (matches && (yield* guard.apply(this, filteredResult))) {
     return filteredResult;
   } else {
     console.error('No match for:', expr);

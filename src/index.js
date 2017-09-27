@@ -1,6 +1,7 @@
 import {
   defmatch,
   match,
+  match_gen,
   MatchError,
   Clause,
   clause,
@@ -32,6 +33,7 @@ import {
 export default {
   defmatch,
   match,
+  match_gen,
   MatchError,
   variable,
   wildcard,
