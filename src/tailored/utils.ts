@@ -1,7 +1,7 @@
 import * as Checks from './checks';
 import ErlangTypes from 'erlang-types';
 
-function arrayEquals(left, right) {
+function arrayEquals(left: any, right: any): boolean {
   if (!Array.isArray(right)) {
     return false;
   }
@@ -19,7 +19,7 @@ function arrayEquals(left, right) {
   return true;
 }
 
-function tupleEquals(left, right) {
+function tupleEquals(left: any, right: any): boolean {
   if (right instanceof ErlangTypes.Tuple === false) {
     return false;
   }
@@ -31,7 +31,7 @@ function tupleEquals(left, right) {
   return arrayEquals(left.values, right.values);
 }
 
-function bitstringEquals(left, right) {
+function bitstringEquals(left: any, right: any): boolean {
   if (right instanceof ErlangTypes.BitString === false) {
     return false;
   }
@@ -43,7 +43,7 @@ function bitstringEquals(left, right) {
   return arrayEquals(left.value, right.value);
 }
 
-function pidEquals(left, right) {
+function pidEquals(left: any, right: any): boolean {
   if (right instanceof ErlangTypes.PID === false) {
     return false;
   }
@@ -51,7 +51,7 @@ function pidEquals(left, right) {
   return left.id === right.id;
 }
 
-function referenceEquals(left, right) {
+function referenceEquals(left: any, right: any): boolean {
   if (right instanceof ErlangTypes.Reference === false) {
     return false;
   }
@@ -59,7 +59,7 @@ function referenceEquals(left, right) {
   return left.id === right.id;
 }
 
-function mapEquals(left, right) {
+function mapEquals(left: any, right: any): boolean {
   if (right instanceof Map === false) {
     return false;
   }
@@ -70,7 +70,7 @@ function mapEquals(left, right) {
   return arrayEquals(leftEntries, rightEntries);
 }
 
-function equals(left, right) {
+function equals(left: any, right: any): boolean {
   if (Array.isArray(left)) {
     return arrayEquals(left, right);
   }
@@ -98,7 +98,7 @@ function equals(left, right) {
   return left === right;
 }
 
-function is_non_primitive(key) {
+function is_non_primitive(key: any): boolean {
   return (
     Checks.is_array(key) ||
     Checks.is_map(key) ||
@@ -109,7 +109,7 @@ function is_non_primitive(key) {
   );
 }
 
-function has(map, key) {
+function has(map: Map<any, any>, key: any): boolean {
   if (is_non_primitive(key)) {
     for (const map_key of map.keys()) {
       if (equals(map_key, key)) {
@@ -123,7 +123,7 @@ function has(map, key) {
   return map.has(key);
 }
 
-function get(map, key) {
+function get(map: Map<any, any>, key: any): any | null {
   if (is_non_primitive(key)) {
     for (const map_key of map.keys()) {
       if (equals(map_key, key)) {
@@ -137,9 +137,8 @@ function get(map, key) {
   return map.get(key);
 }
 
-
 export default {
   get,
   has,
-  equals,
-}
+  equals
+};

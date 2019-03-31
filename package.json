@@ -3,12 +3,15 @@
   "version": "2.7.5",
   "description": "Pattern matching library",
   "main": "lib/tailored.js",
-  "jsnext:main": "src/index.js",
+  "types": "lib/index.d.ts",
   "scripts": {
-    "build": "rollup -c rollup.config.js",
-    "test": "mocha test --recursive --compilers js:babel-register"
+    "build": "tsc",
+    "test": "TS_NODE_COMPILER_OPTIONS='{\"module\":\"commonjs\", \"esModuleInterop\": true}' NODE_ENV=test nyc --all --reporter=text --reporter=lcov mocha --require ts-node/register test/*.spec.[jt]s*"
   },
-  "keywords": ["pattern-matching", "functional"],
+  "keywords": [
+    "pattern-matching",
+    "functional"
+  ],
   "repository": {
     "type": "git",
     "url": "https://github.com/elixirscript/tailored.git"
@@ -16,15 +19,23 @@
   "author": "Bryan Joseph <bryanjos@gmail.com>",
   "license": "MIT",
   "devDependencies": {
-    "babel-core": "^6.25.0",
-    "babel-preset-env": "^1.6.0",
-    "babel-register": "^6.24.1",
-    "chai": "^4.1.0",
+    "ts-node": "^7.0.1",
+    "typedoc": "^0.14.0",
+    "typescript": "^3.2.2",
+    "chai": "^4.1.2",
     "mocha": "^6.0.2",
-    "rollup": "^0.45.2",
-    "rollup-plugin-babel": "^2.7.1"
+    "nyc": "^13.0.1",
+    "@types/chai": "^4.1.7",
+    "@types/mocha": "^5.2.6"
   },
   "dependencies": {
     "erlang-types": "^1.0.1"
+  },
+  "nyc": {
+    "exclude": [
+      "*.config.js",
+      "**/*_test.js",
+      "coverage/**/*"
+    ]
   }
 }

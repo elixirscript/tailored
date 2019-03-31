@@ -1,5 +1,3 @@
-'use strict';
-
 import chai from 'chai';
 var expect = chai.expect;
 
@@ -26,7 +24,7 @@ describe('list generator', () => {
 
   it('must only result matching values', () => {
     let gen = Tailored.list_generator(
-      Tailored.capture(Tailored.type(Tuple, { values: [1, 2, 3] })),
+      Tailored.capture(Tailored.type(Tuple, {values: [1, 2, 3]})),
       [new Tuple(1, 2, 3), 2, 3, 4]
     );
 
@@ -87,7 +85,7 @@ describe('list comprehension', () => {
 describe('binary comprehension', () => {
   it('must work on simple case', () => {
     let gen = Tailored.bitstring_generator(
-      Tailored.bitStringMatch(BitString.integer({ value: $ })),
+      Tailored.bitStringMatch(BitString.integer({value: $})),
       new BitString(
         BitString.integer(1),
         BitString.integer(2),
@@ -96,7 +94,7 @@ describe('binary comprehension', () => {
     );
     let comp = Tailored.bitstring_comprehension(
       Tailored.clause(
-        [Tailored.bitStringMatch(BitString.integer({ value: $ }))],
+        [Tailored.bitStringMatch(BitString.integer({value: $}))],
         x => x * 2
       ),
       [gen]
