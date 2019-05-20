@@ -21,7 +21,7 @@
     "babel-register": "^6.24.1",
     "chai": "^4.1.0",
     "mocha": "^6.0.2",
-    "rollup": "^0.45.2",
+    "rollup": "^1.12.3",
     "rollup-plugin-babel": "^3.0.7"
   },
   "dependencies": {
